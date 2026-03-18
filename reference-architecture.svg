@@ -1,0 +1,351 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f1923"/>
+      <stop offset="100%" style="stop-color:#1a2d42"/>
+    </linearGradient>
+    <linearGradient id="entraGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0078d4"/>
+      <stop offset="100%" style="stop-color:#005a9e"/>
+    </linearGradient>
+    <linearGradient id="capGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8590c"/>
+      <stop offset="100%" style="stop-color:#c2410c"/>
+    </linearGradient>
+    <linearGradient id="capGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="capGrad3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#16a34a"/>
+      <stop offset="100%" style="stop-color:#15803d"/>
+    </linearGradient>
+    <linearGradient id="wsGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#374151"/>
+      <stop offset="100%" style="stop-color:#1f2937"/>
+    </linearGradient>
+    <linearGradient id="govGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#6d28d9"/>
+    </linearGradient>
+    <linearGradient id="netGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0891b2"/>
+      <stop offset="100%" style="stop-color:#0e7490"/>
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <marker id="arrowWhite" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa"/>
+    </marker>
+    <marker id="arrowCyan" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22d3ee"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle grid pattern -->
+  <g opacity="0.04">
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(80,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(160,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(240,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(320,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(400,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(480,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(560,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(640,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(720,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(800,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(880,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(960,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(1040,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(1120,0)"/>
+    <line x1="0" y1="0" x2="0" y2="720" stroke="#fff" stroke-width="1" transform="translate(1200,0)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,80)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,160)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,240)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,320)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,400)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,480)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,560)"/>
+    <line x1="0" y1="0" x2="1280" y2="0" stroke="#fff" stroke-width="1" transform="translate(0,640)"/>
+  </g>
+
+  <!-- Title -->
+  <text x="640" y="42" text-anchor="middle" fill="#e2e8f0" font-size="22" font-weight="700" letter-spacing="1">FABRIC WELL-ARCHITECTED REFERENCE ARCHITECTURE</text>
+  <line x1="440" y1="52" x2="840" y2="52" stroke="#475569" stroke-width="1"/>
+
+  <!-- ==================== IDENTITY LAYER (TOP) ==================== -->
+  <rect x="460" y="68" width="360" height="52" rx="8" fill="url(#entraGrad)" filter="url(#shadow)"/>
+  <!-- Shield icon -->
+  <g transform="translate(480, 82)">
+    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5L12 1z" fill="none" stroke="#fff" stroke-width="1.5"/>
+    <path d="M10 12l2 2 4-4" fill="none" stroke="#fff" stroke-width="1.5"/>
+  </g>
+  <text x="510" y="98" fill="#ffffff" font-size="16" font-weight="700">Microsoft Entra ID</text>
+  <text x="700" y="98" fill="#bfdbfe" font-size="11">Conditional Access · PIM · Service Principals</text>
+
+  <!-- Arrow from Entra to Capacities -->
+  <line x1="640" y1="120" x2="640" y2="148" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowWhite)" stroke-dasharray="4,3"/>
+
+  <!-- ==================== CAPACITY LAYER ==================== -->
+  <!-- Section label -->
+  <text x="56" y="175" fill="#94a3b8" font-size="11" font-weight="600" letter-spacing="2" transform="rotate(-90, 56, 175)">CAPACITIES</text>
+
+  <!-- Sales BU Capacity -->
+  <g filter="url(#shadow)">
+    <rect x="90" y="152" width="350" height="235" rx="10" fill="#1e293b" stroke="#e8590c" stroke-width="1.5" stroke-opacity="0.6"/>
+    <rect x="90" y="152" width="350" height="32" rx="10" fill="url(#capGrad1)"/>
+    <rect x="90" y="174" width="350" height="10" fill="url(#capGrad1)"/>
+    <text x="110" y="174" fill="#fff" font-size="13" font-weight="700">SALES · Analytics · Prod</text>
+    <text x="390" y="174" fill="#fed7aa" font-size="10" text-anchor="end">F64 · East US</text>
+  </g>
+
+  <!-- Workspaces inside Sales -->
+  <rect x="110" y="198" width="150" height="80" rx="6" fill="url(#wsGrad)" stroke="#4b5563" stroke-width="1"/>
+  <text x="120" y="216" fill="#d1d5db" font-size="10" font-weight="600">Workspace: Sales DW</text>
+  <!-- Items -->
+  <rect x="120" y="226" width="56" height="20" rx="3" fill="#1e3a5f"/>
+  <text x="148" y="240" text-anchor="middle" fill="#60a5fa" font-size="8">Lakehouse</text>
+  <rect x="182" y="226" width="56" height="20" rx="3" fill="#3b1f1f"/>
+  <text x="210" y="240" text-anchor="middle" fill="#f87171" font-size="8">Warehouse</text>
+  <rect x="120" y="252" width="56" height="20" rx="3" fill="#1f3b2f"/>
+  <text x="148" y="266" text-anchor="middle" fill="#4ade80" font-size="8">Pipeline</text>
+  <rect x="182" y="252" width="56" height="20" rx="3" fill="#3b3b1f"/>
+  <text x="210" y="266" text-anchor="middle" fill="#fbbf24" font-size="8">Sem Model</text>
+
+  <rect x="274" y="198" width="150" height="80" rx="6" fill="url(#wsGrad)" stroke="#4b5563" stroke-width="1"/>
+  <text x="284" y="216" fill="#d1d5db" font-size="10" font-weight="600">Workspace: Sales Rpt</text>
+  <rect x="284" y="226" width="56" height="20" rx="3" fill="#3b3b1f"/>
+  <text x="312" y="240" text-anchor="middle" fill="#fbbf24" font-size="8">Sem Model</text>
+  <rect x="346" y="226" width="56" height="20" rx="3" fill="#2d1f3b"/>
+  <text x="374" y="240" text-anchor="middle" fill="#c084fc" font-size="8">Report</text>
+  <rect x="284" y="252" width="56" height="20" rx="3" fill="#2d1f3b"/>
+  <text x="312" y="266" text-anchor="middle" fill="#c084fc" font-size="8">Report</text>
+  <rect x="346" y="252" width="56" height="20" rx="3" fill="#2d1f3b"/>
+  <text x="374" y="266" text-anchor="middle" fill="#c084fc" font-size="8">Dashboard</text>
+
+  <!-- Tags -->
+  <g transform="translate(110, 295)">
+    <rect width="52" height="16" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="26" y="11" text-anchor="middle" fill="#a5b4fc" font-size="7">BU: Sales</text>
+  </g>
+  <g transform="translate(168, 295)">
+    <rect width="66" height="16" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="33" y="11" text-anchor="middle" fill="#a5b4fc" font-size="7">CC: SALES-001</text>
+  </g>
+  <g transform="translate(240, 295)">
+    <rect width="58" height="16" rx="8" fill="#14532d" stroke="#22c55e" stroke-width="0.5"/>
+    <text x="29" y="11" text-anchor="middle" fill="#86efac" font-size="7">Env: Prod</text>
+  </g>
+  <g transform="translate(304, 295)">
+    <rect width="74" height="16" rx="8" fill="#7f1d1d" stroke="#ef4444" stroke-width="0.5"/>
+    <text x="37" y="11" text-anchor="middle" fill="#fca5a5" font-size="7">Data: Confidential</text>
+  </g>
+  <!-- Tag label -->
+  <text x="110" y="330" fill="#64748b" font-size="8" font-style="italic">Tags: Owner · Cost Center · Env · Classification</text>
+
+  <!-- Finance BU Capacity -->
+  <g filter="url(#shadow)">
+    <rect x="465" y="152" width="350" height="235" rx="10" fill="#1e293b" stroke="#2563eb" stroke-width="1.5" stroke-opacity="0.6"/>
+    <rect x="465" y="152" width="350" height="32" rx="10" fill="url(#capGrad2)"/>
+    <rect x="465" y="174" width="350" height="10" fill="url(#capGrad2)"/>
+    <text x="485" y="174" fill="#fff" font-size="13" font-weight="700">FINANCE · ETL · Prod</text>
+    <text x="765" y="174" fill="#bfdbfe" font-size="10" text-anchor="end">F32 · East US</text>
+  </g>
+
+  <rect x="485" y="198" width="150" height="80" rx="6" fill="url(#wsGrad)" stroke="#4b5563" stroke-width="1"/>
+  <text x="495" y="216" fill="#d1d5db" font-size="10" font-weight="600">Workspace: Fin Ingest</text>
+  <rect x="495" y="226" width="56" height="20" rx="3" fill="#1e3a5f"/>
+  <text x="523" y="240" text-anchor="middle" fill="#60a5fa" font-size="8">Lakehouse</text>
+  <rect x="557" y="226" width="56" height="20" rx="3" fill="#1f3b2f"/>
+  <text x="585" y="240" text-anchor="middle" fill="#4ade80" font-size="8">Pipeline</text>
+  <rect x="495" y="252" width="56" height="20" rx="3" fill="#1f3b2f"/>
+  <text x="523" y="266" text-anchor="middle" fill="#4ade80" font-size="8">Notebook</text>
+  <rect x="557" y="252" width="56" height="20" rx="3" fill="#3b1f1f"/>
+  <text x="585" y="266" text-anchor="middle" fill="#f87171" font-size="8">Dataflow</text>
+
+  <rect x="649" y="198" width="150" height="80" rx="6" fill="url(#wsGrad)" stroke="#4b5563" stroke-width="1"/>
+  <text x="659" y="216" fill="#d1d5db" font-size="10" font-weight="600">Workspace: Fin DW</text>
+  <rect x="659" y="226" width="56" height="20" rx="3" fill="#3b1f1f"/>
+  <text x="687" y="240" text-anchor="middle" fill="#f87171" font-size="8">Warehouse</text>
+  <rect x="721" y="226" width="56" height="20" rx="3" fill="#3b3b1f"/>
+  <text x="749" y="240" text-anchor="middle" fill="#fbbf24" font-size="8">Sem Model</text>
+  <rect x="659" y="252" width="56" height="20" rx="3" fill="#2d1f3b"/>
+  <text x="687" y="266" text-anchor="middle" fill="#c084fc" font-size="8">Report</text>
+
+  <g transform="translate(485, 295)">
+    <rect width="62" height="16" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="31" y="11" text-anchor="middle" fill="#a5b4fc" font-size="7">BU: Finance</text>
+  </g>
+  <g transform="translate(553, 295)">
+    <rect width="60" height="16" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="30" y="11" text-anchor="middle" fill="#a5b4fc" font-size="7">CC: FIN-042</text>
+  </g>
+  <g transform="translate(619, 295)">
+    <rect width="58" height="16" rx="8" fill="#14532d" stroke="#22c55e" stroke-width="0.5"/>
+    <text x="29" y="11" text-anchor="middle" fill="#86efac" font-size="7">Env: Prod</text>
+  </g>
+  <g transform="translate(683, 295)">
+    <rect width="74" height="16" rx="8" fill="#7f1d1d" stroke="#ef4444" stroke-width="0.5"/>
+    <text x="37" y="11" text-anchor="middle" fill="#fca5a5" font-size="7">Data: Restricted</text>
+  </g>
+  <text x="485" y="330" fill="#64748b" font-size="8" font-style="italic">Tags: Owner · Cost Center · Env · Classification</text>
+
+  <!-- Marketing BU Capacity (Dev) -->
+  <g filter="url(#shadow)">
+    <rect x="840" y="152" width="350" height="235" rx="10" fill="#1e293b" stroke="#16a34a" stroke-width="1.5" stroke-opacity="0.6"/>
+    <rect x="840" y="152" width="350" height="32" rx="10" fill="url(#capGrad3)"/>
+    <rect x="840" y="174" width="350" height="10" fill="url(#capGrad3)"/>
+    <text x="860" y="174" fill="#fff" font-size="13" font-weight="700">MARKETING · Reporting · Dev</text>
+    <text x="1140" y="174" fill="#bbf7d0" font-size="10" text-anchor="end">F2 · East US</text>
+  </g>
+
+  <rect x="860" y="198" width="150" height="80" rx="6" fill="url(#wsGrad)" stroke="#4b5563" stroke-width="1"/>
+  <text x="870" y="216" fill="#d1d5db" font-size="10" font-weight="600">Workspace: Mkt Dev</text>
+  <rect x="870" y="226" width="56" height="20" rx="3" fill="#1e3a5f"/>
+  <text x="898" y="240" text-anchor="middle" fill="#60a5fa" font-size="8">Lakehouse</text>
+  <rect x="932" y="226" width="56" height="20" rx="3" fill="#1f3b2f"/>
+  <text x="960" y="240" text-anchor="middle" fill="#4ade80" font-size="8">Notebook</text>
+  <rect x="870" y="252" width="56" height="20" rx="3" fill="#2d1f3b"/>
+  <text x="898" y="266" text-anchor="middle" fill="#c084fc" font-size="8">Report</text>
+
+  <rect x="1024" y="198" width="150" height="80" rx="6" fill="url(#wsGrad)" stroke="#4b5563" stroke-width="1"/>
+  <text x="1034" y="216" fill="#d1d5db" font-size="10" font-weight="600">Workspace: Mkt Test</text>
+  <rect x="1034" y="226" width="56" height="20" rx="3" fill="#1e3a5f"/>
+  <text x="1062" y="240" text-anchor="middle" fill="#60a5fa" font-size="8">Lakehouse</text>
+  <rect x="1096" y="226" width="56" height="20" rx="3" fill="#3b3b1f"/>
+  <text x="1124" y="240" text-anchor="middle" fill="#fbbf24" font-size="8">Sem Model</text>
+  <rect x="1034" y="252" width="56" height="20" rx="3" fill="#2d1f3b"/>
+  <text x="1062" y="266" text-anchor="middle" fill="#c084fc" font-size="8">Report</text>
+
+  <g transform="translate(860, 295)">
+    <rect width="74" height="16" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="37" y="11" text-anchor="middle" fill="#a5b4fc" font-size="7">BU: Marketing</text>
+  </g>
+  <g transform="translate(940, 295)">
+    <rect width="64" height="16" rx="8" fill="#312e81" stroke="#6366f1" stroke-width="0.5"/>
+    <text x="32" y="11" text-anchor="middle" fill="#a5b4fc" font-size="7">CC: MKT-017</text>
+  </g>
+  <g transform="translate(1010, 295)">
+    <rect width="50" height="16" rx="8" fill="#422006" stroke="#f59e0b" stroke-width="0.5"/>
+    <text x="25" y="11" text-anchor="middle" fill="#fcd34d" font-size="7">Env: Dev</text>
+  </g>
+  <g transform="translate(1066, 295)">
+    <rect width="62" height="16" rx="8" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.5"/>
+    <text x="31" y="11" text-anchor="middle" fill="#93c5fd" font-size="7">Data: Internal</text>
+  </g>
+  <text x="860" y="330" fill="#64748b" font-size="8" font-style="italic">Tags: Owner · Cost Center · Env · Classification</text>
+
+  <!-- Capacity sizing note -->
+  <text x="640" y="360" text-anchor="middle" fill="#64748b" font-size="9" font-style="italic">⬆ Capacities segmented by Business Unit × Function × Environment — right-sized per workload (F2 → F64+)</text>
+
+  <!-- ==================== NETWORKING OVERLAY (BOTTOM LEFT) ==================== -->
+  <rect x="90" y="400" width="540" height="140" rx="10" fill="#0c1929" stroke="#0891b2" stroke-width="1.2" stroke-opacity="0.5" stroke-dasharray="6,3"/>
+  <!-- Network icon -->
+  <g transform="translate(108, 414)">
+    <circle cx="8" cy="8" r="7" fill="none" stroke="#22d3ee" stroke-width="1.2"/>
+    <circle cx="8" cy="8" r="3" fill="none" stroke="#22d3ee" stroke-width="1"/>
+    <line x1="8" y1="1" x2="8" y2="15" stroke="#22d3ee" stroke-width="0.8"/>
+    <path d="M1.5 6 Q8 4 14.5 6" fill="none" stroke="#22d3ee" stroke-width="0.8"/>
+    <path d="M1.5 10 Q8 12 14.5 10" fill="none" stroke="#22d3ee" stroke-width="0.8"/>
+  </g>
+  <text x="134" y="426" fill="#22d3ee" font-size="14" font-weight="700">PRIVATE NETWORKING</text>
+
+  <!-- Private Link -->
+  <rect x="110" y="440" width="155" height="44" rx="6" fill="#0e2a3d" stroke="#0891b2" stroke-width="0.8"/>
+  <text x="120" y="456" fill="#67e8f9" font-size="10" font-weight="600">Private Link</text>
+  <text x="120" y="470" fill="#94a3b8" font-size="8">Inbound to Fabric endpoints</text>
+
+  <!-- Managed PEs -->
+  <rect x="275" y="440" width="175" height="44" rx="6" fill="#0e2a3d" stroke="#0891b2" stroke-width="0.8"/>
+  <text x="285" y="456" fill="#67e8f9" font-size="10" font-weight="600">Managed Private Endpoints</text>
+  <text x="285" y="470" fill="#94a3b8" font-size="8">Outbound to Azure services</text>
+
+  <!-- VNet Gateway -->
+  <rect x="460" y="440" width="155" height="44" rx="6" fill="#0e2a3d" stroke="#0891b2" stroke-width="0.8"/>
+  <text x="470" y="456" fill="#67e8f9" font-size="10" font-weight="600">VNet Data Gateway</text>
+  <text x="470" y="470" fill="#94a3b8" font-size="8">On-prem &amp; IaaS connectivity</text>
+
+  <!-- Network flow arrows -->
+  <text x="110" y="505" fill="#94a3b8" font-size="9">Users</text>
+  <line x1="142" y1="502" x2="185" y2="484" stroke="#22d3ee" stroke-width="1" marker-end="url(#arrowCyan)" opacity="0.6"/>
+  
+  <text x="275" y="505" fill="#94a3b8" font-size="9">Azure SQL · ADLS · KV</text>
+  <line x1="340" y1="499" x2="340" y2="487" stroke="#22d3ee" stroke-width="1" marker-end="url(#arrowCyan)" opacity="0.6"/>
+
+  <text x="460" y="505" fill="#94a3b8" font-size="9">On-Prem SQL · Oracle · SAP</text>
+  <line x1="520" y1="499" x2="520" y2="487" stroke="#22d3ee" stroke-width="1" marker-end="url(#arrowCyan)" opacity="0.6"/>
+
+  <text x="110" y="525" fill="#475569" font-size="8" font-style="italic">Disable public access where compliance requires it · Not all experiences support Private Link equally</text>
+
+  <!-- ==================== GOVERNANCE OVERLAY (BOTTOM RIGHT) ==================== -->
+  <rect x="650" y="400" width="540" height="140" rx="10" fill="#1a0e2e" stroke="#7c3aed" stroke-width="1.2" stroke-opacity="0.5" stroke-dasharray="6,3"/>
+  <!-- Gear icon -->
+  <g transform="translate(668, 414)">
+    <circle cx="8" cy="8" r="4" fill="none" stroke="#a78bfa" stroke-width="1.2"/>
+    <g fill="#a78bfa">
+      <rect x="7" y="0" width="2" height="4" rx="1"/>
+      <rect x="7" y="12" width="2" height="4" rx="1"/>
+      <rect x="0" y="7" width="4" height="2" rx="1"/>
+      <rect x="12" y="7" width="4" height="2" rx="1"/>
+    </g>
+  </g>
+  <text x="694" y="426" fill="#a78bfa" font-size="14" font-weight="700">GOVERNANCE &amp; MONITORING</text>
+
+  <rect x="670" y="440" width="122" height="44" rx="6" fill="#1e1235" stroke="#7c3aed" stroke-width="0.8"/>
+  <text x="680" y="456" fill="#c4b5fd" font-size="10" font-weight="600">Naming Standard</text>
+  <text x="680" y="470" fill="#94a3b8" font-size="8">{BU}-{Fn}-{Env}-{Rgn}</text>
+
+  <rect x="802" y="440" width="122" height="44" rx="6" fill="#1e1235" stroke="#7c3aed" stroke-width="0.8"/>
+  <text x="812" y="456" fill="#c4b5fd" font-size="10" font-weight="600">Tagging</text>
+  <text x="812" y="470" fill="#94a3b8" font-size="8">Owner · CC · Env · Class</text>
+
+  <rect x="934" y="440" width="122" height="44" rx="6" fill="#1e1235" stroke="#7c3aed" stroke-width="0.8"/>
+  <text x="944" y="456" fill="#c4b5fd" font-size="10" font-weight="600">REST API Automation</text>
+  <text x="944" y="470" fill="#94a3b8" font-size="8">Enforce via CI/CD &amp; scripts</text>
+
+  <rect x="1066" y="440" width="108" height="44" rx="6" fill="#1e1235" stroke="#7c3aed" stroke-width="0.8"/>
+  <text x="1076" y="456" fill="#c4b5fd" font-size="10" font-weight="600">Audit &amp; Monitor</text>
+  <text x="1076" y="470" fill="#94a3b8" font-size="8">Logs → Sentinel / LA</text>
+
+  <!-- Warning callout -->
+  <rect x="670" y="498" width="500" height="30" rx="6" fill="#2d1810" stroke="#b45309" stroke-width="0.8"/>
+  <text x="688" y="517" fill="#fbbf24" font-size="10" font-weight="600">⚠</text>
+  <text x="705" y="517" fill="#fcd34d" font-size="10" font-weight="600">Gaps:</text>
+  <text x="742" y="517" fill="#d4a373" font-size="9">No Azure Policy · Coarse RBAC (Admin/Member/Contributor/Viewer) · Limited audit event types</text>
+
+  <!-- ==================== ONELAKE FOUNDATION ==================== -->
+  <rect x="90" y="565" width="1100" height="55" rx="10" fill="#0f2830" stroke="#0d9488" stroke-width="1.2" stroke-opacity="0.4"/>
+  <text x="640" y="590" text-anchor="middle" fill="#2dd4bf" font-size="16" font-weight="700" letter-spacing="3">O N E L A K E</text>
+  <text x="640" y="607" text-anchor="middle" fill="#5eead4" font-size="10" opacity="0.7">Unified data lake foundation · Delta/Parquet · Shortcuts · V-Order optimized</text>
+
+  <!-- ==================== GIT / CI-CD BAR ==================== -->
+  <rect x="90" y="635" width="1100" height="38" rx="8" fill="#1a1a2e" stroke="#6366f1" stroke-width="0.8" stroke-opacity="0.4"/>
+  <text x="640" y="659" text-anchor="middle" fill="#818cf8" font-size="11" font-weight="600" letter-spacing="1">GIT INTEGRATION &amp; CI/CD</text>
+  <text x="330" y="659" fill="#64748b" font-size="9">Workspace → Git sync</text>
+  <text x="880" y="659" fill="#64748b" font-size="9">Pipeline definitions &amp; models in source control</text>
+
+  <!-- ==================== LEGEND ==================== -->
+  <g transform="translate(90, 690)">
+    <rect width="8" height="8" rx="2" fill="#1e3a5f"/><text x="14" y="8" fill="#60a5fa" font-size="8">Lakehouse</text>
+    <rect x="80" width="8" height="8" rx="2" fill="#3b1f1f"/><text x="94" y="8" fill="#f87171" font-size="8">Warehouse</text>
+    <rect x="162" width="8" height="8" rx="2" fill="#1f3b2f"/><text x="176" y="8" fill="#4ade80" font-size="8">Pipeline/Notebook</text>
+    <rect x="274" width="8" height="8" rx="2" fill="#3b3b1f"/><text x="288" y="8" fill="#fbbf24" font-size="8">Semantic Model</text>
+    <rect x="376" width="8" height="8" rx="2" fill="#2d1f3b"/><text x="390" y="8" fill="#c084fc" font-size="8">Report/Dashboard</text>
+
+    <line x1="500" y1="4" x2="530" y2="4" stroke="#22d3ee" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <text x="536" y="8" fill="#67e8f9" font-size="8">Network boundary</text>
+    <line x1="640" y1="4" x2="670" y2="4" stroke="#a78bfa" stroke-width="1.2" stroke-dasharray="4,2"/>
+    <text x="676" y="8" fill="#c4b5fd" font-size="8">Governance overlay</text>
+  </g>
+</svg>
