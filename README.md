@@ -2,11 +2,17 @@
 
 Terraform and governance standards for deploying Microsoft Fabric capacities on Azure in a well-architected, policy-enforced manner.
 
+## Reference Architecture
+
+![Reference Architecture](reference-architecture.svg)
+
 ## Contents
 
 ```
 FabricWAF/
-├── naming-standard.md      # Naming conventions for all Fabric resources
+├── naming-standard.md          # Naming conventions for all Fabric resources
+├── reference-architecture.md   # Architecture narrative and component breakdown
+├── reference-architecture.svg  # Architecture diagram
 └── terraform/
     ├── providers.tf         # AzureRM provider configuration
     ├── variables.tf         # Input variables with built-in validation
