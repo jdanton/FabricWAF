@@ -51,9 +51,10 @@ variable "sku_name" {
   }
 }
 
-variable "administration_members" {
-  description = "List of UPNs or service principal object IDs that will administer the Fabric capacity."
-  type        = list(string)
+variable "fabric_admins_group_name" {
+  description = "Display name of the Entra security group whose members can administer Fabric capacities. Defaults to 'Fabric-Capacity-Admins'."
+  type        = string
+  default     = "Fabric-Capacity-Admins"
 }
 
 # ---------------------------------------------------------------------------

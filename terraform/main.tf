@@ -1,3 +1,8 @@
+data "azuread_group" "fabric_capacity_admins" {
+  display_name     = var.fabric_admins_group_name
+  security_enabled = true
+}
+
 locals {
   required_tags = {
     costCenter  = var.cost_center
@@ -18,7 +23,8 @@ resource "azurerm_fabric_capacity" "this" {
     tier = "Fabric"
   }
 
-  administration_members = var.administration_members
+  # Locked to the Fabric-Capacity-Admins Entra group; enforced by policy as well.
+  administration_members = [data.azuread_group.fabric_capacity_admins.object_id]
 
   tags = local.tags
 }
