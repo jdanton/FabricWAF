@@ -45,11 +45,27 @@
 
 ---
 
-### 2. Workspace
+### 2. Domain
+
+**Pattern:** `{BU}` or `{BU}-{SubDomain}`
+
+Domains are the top-level logical boundary for organizing workspaces by business area. A domain can span multiple capacities and regions — it is an organizational construct, not an infrastructure one. Define domains early so workspaces have a home from day one.
+
+| Example | Description |
+|---------|-------------|
+| `finance` | Finance domain — all finance workspaces regardless of capacity |
+| `sales` | Sales domain |
+| `engineering` | Engineering domain |
+| `engineering-platform` | Engineering platform sub-domain |
+| `hr` | Human Resources domain |
+
+---
+
+### 3. Workspace
 
 **Pattern:** `{BU}-{Function}-{Env}`
 
-Workspaces are scoped to a capacity, so region can be omitted.
+Workspaces are assigned to a domain and backed by a capacity. Region is omitted because capacity already carries it.
 
 | Example | Description |
 |---------|-------------|
@@ -60,7 +76,7 @@ Workspaces are scoped to a capacity, so region can be omitted.
 
 ---
 
-### 3. Lakehouse
+### 4. Lakehouse
 
 **Pattern:** `lh_{BU}_{Layer}_{Env}`
 
@@ -76,7 +92,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 4. Warehouse
+### 5. Warehouse
 
 **Pattern:** `wh_{BU}_{Function}_{Env}`
 
@@ -88,7 +104,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 5. Data Pipeline
+### 6. Data Pipeline
 
 **Pattern:** `pl_{BU}_{Source}_to_{Layer}_{Freq}`
 
@@ -102,7 +118,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 6. Dataflow Gen2
+### 7. Dataflow Gen2
 
 **Pattern:** `df_{BU}_{Source}_{Domain}_{Layer}`
 
@@ -114,7 +130,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 7. Notebook
+### 8. Notebook
 
 **Pattern:** `nb_{BU}_{Function}_{Domain}`
 
@@ -127,7 +143,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 8. Spark Job Definition
+### 9. Spark Job Definition
 
 **Pattern:** `sj_{BU}_{Function}_{Domain}_{Freq}`
 
@@ -138,7 +154,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 9. Semantic Model (Power BI Dataset)
+### 10. Semantic Model (Power BI Dataset)
 
 **Pattern:** `sm_{BU}_{Domain}_{Env}`
 
@@ -150,7 +166,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 10. Power BI Report
+### 11. Power BI Report
 
 **Pattern:** `rpt_{BU}_{Domain}_{Audience}`
 
@@ -163,7 +179,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 11. Paginated Report
+### 12. Paginated Report
 
 **Pattern:** `prpt_{BU}_{Domain}_{Description}`
 
@@ -174,7 +190,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 12. KQL Database
+### 13. KQL Database
 
 **Pattern:** `kql_{BU}_{Domain}_{Env}`
 
@@ -185,7 +201,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 13. KQL Queryset
+### 14. KQL Queryset
 
 **Pattern:** `kqs_{BU}_{Domain}_{Purpose}`
 
@@ -196,7 +212,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 14. Eventstream
+### 15. Eventstream
 
 **Pattern:** `es_{BU}_{Source}_{Domain}`
 
@@ -208,7 +224,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 15. ML Experiment
+### 16. ML Experiment
 
 **Pattern:** `exp_{BU}_{Domain}_{Technique}`
 
@@ -219,7 +235,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 16. ML Model
+### 17. ML Model
 
 **Pattern:** `mdl_{BU}_{Domain}_{Version}`
 
@@ -230,7 +246,7 @@ Use underscores because the lakehouse name becomes a SQL schema/catalog identifi
 
 ---
 
-### 17. Lakehouse Table (Delta Table)
+### 18. Lakehouse Table (Delta Table)
 
 **Pattern:** `{Layer}_{Domain}_{Entity}`
 
@@ -247,7 +263,7 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 
 ---
 
-### 18. Lakehouse Files / Folders
+### 19. Lakehouse Files / Folders
 
 **Pattern:** `{Source}/{Domain}/{YYYY}/{MM}/{DD}/`
 
@@ -259,7 +275,7 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 
 ---
 
-### 19. Shortcut
+### 20. Shortcut
 
 **Pattern:** `sc_{SourceLakehouse}_{Domain}`
 
@@ -270,7 +286,7 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 
 ---
 
-### 20. Data Activator Reflex
+### 21. Data Activator Reflex
 
 **Pattern:** `rx_{BU}_{Domain}_{Trigger}`
 
@@ -281,7 +297,7 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 
 ---
 
-### 21. Environment
+### 22. Environment
 
 **Pattern:** `env_{BU}_{Purpose}_{Env}`
 
@@ -290,16 +306,7 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 | `env_fin_spark_prod` | Finance Spark runtime config, production |
 | `env_eng_ml_dev` | Engineering ML environment, development |
 
----
-
-### 22. Domain (Fabric Domain)
-
-**Pattern:** `{BU}` or `{BU}-{SubDomain}`
-
-Domains are top-level organizational units. Keep them short.
-
-| Example | Description |
-|---------|-------------|
+---------|-------------|
 | `finance` | Finance domain |
 | `sales` | Sales domain |
 | `engineering-platform` | Engineering platform sub-domain |
@@ -311,6 +318,7 @@ Domains are top-level organizational units. Keep them short.
 | Resource | Prefix | Pattern | Example |
 |----------|--------|---------|---------|
 | Capacity | — | `{BU}-{Function}-{Env}-{Region}` | `fin-dw-prod-eus` |
+| Domain | — | `{BU}` or `{BU}-{SubDomain}` | `finance` |
 | Workspace | — | `{BU}-{Function}-{Env}` | `fin-dw-prod` |
 | Lakehouse | `lh_` | `lh_{BU}_{Layer}_{Env}` | `lh_fin_gold_prod` |
 | Warehouse | `wh_` | `wh_{BU}_{Function}_{Env}` | `wh_fin_dw_prod` |
@@ -330,7 +338,6 @@ Domains are top-level organizational units. Keep them short.
 | Shortcut | `sc_` | `sc_{Source}_{Domain}` | `sc_lh_fin_raw_customers` |
 | Reflex | `rx_` | `rx_{BU}_{Domain}_{Trigger}` | `rx_sales_pipeline_deal_alert` |
 | Environment | `env_` | `env_{BU}_{Purpose}_{Env}` | `env_fin_spark_prod` |
-| Domain | — | `{BU}` or `{BU}-{SubDomain}` | `finance` |
 
 ---
 
