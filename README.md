@@ -14,10 +14,10 @@ FabricWAF/
 ├── reference-architecture.md   # Architecture narrative and component breakdown
 ├── reference-architecture.svg  # Architecture diagram
 └── terraform/
-    ├── providers.tf         # AzureRM provider configuration
+    ├── providers.tf         # AzureRM + AzureAD provider configuration
     ├── variables.tf         # Input variables with built-in validation
     ├── main.tf              # Fabric capacity resource + required tags
-    ├── policy.tf            # Azure Policy definitions, assignments, and initiative
+    ├── policy.tf            # Azure Policy definitions, assignments, RBAC role, and initiative
     └── outputs.tf           # Resource ID outputs
 ```
 
@@ -25,11 +25,15 @@ FabricWAF/
 
 - Terraform >= 1.6.0
 - AzureRM provider >= 4.0.0
+- AzureAD provider >= 2.47.0
+- An Entra security group named `Fabric-Capacity-Admins` (or set via `fabric_admins_group_name`)
 - Azure subscription with permissions to create:
   - `Microsoft.Fabric/capacities`
   - `Microsoft.Authorization/policyDefinitions`
   - `Microsoft.Authorization/policyAssignments`
   - `Microsoft.Authorization/policySetDefinitions`
+  - `Microsoft.Authorization/roleDefinitions`
+  - `Microsoft.Authorization/roleAssignments`
 
 ## Usage
 
@@ -43,15 +47,15 @@ az account set --subscription "<subscription-id>"
 **2. Create a `terraform.tfvars` file**
 
 ```hcl
-resource_group_name    = "rg-fabric-prod"
-location               = "eastus"
-capacity_name          = "fin-dw-prod-eus"
-sku_name               = "F8"
-administration_members = ["admin@contoso.com"]
-cost_center            = "CC-1234"
-created_by             = "platform-team@contoso.com"
-created_date           = "2026-03-18"
-policy_scope           = "/subscriptions/<subscription-id>"
+resource_group_name      = "rg-fabric-prod"
+location                 = "eastus"
+capacity_name            = "fin-dw-prod-eus"
+sku_name                 = "F8"
+fabric_admins_group_name = "Fabric-Capacity-Admins"
+cost_center              = "CC-1234"
+created_by               = "platform-team@contoso.com"
+created_date             = "2026-03-18"
+policy_scope             = "/subscriptions/<subscription-id>"
 ```
 
 **3. Deploy**
@@ -65,7 +69,9 @@ terraform apply
 
 ## Fabric Capacity
 
-The `azurerm_fabric_capacity` resource is created with the SKU and admin members you provide. Three tags are required on every capacity:
+The `azurerm_fabric_capacity` resource is created with the SKU you provide. Administration is locked to the `Fabric-Capacity-Admins` Entra group — the group's object ID is resolved at plan time via the `azuread` provider and set as the only `administration_members` entry.
+
+Three tags are required on every capacity:
 
 | Tag | Description |
 |-----|-------------|
@@ -81,7 +87,7 @@ Additional tags can be passed via `additional_tags`.
 
 ## Azure Policies
 
-Two custom policy definitions are deployed and bundled into a single initiative (`fabric-capacity-governance`).
+Three custom policy definitions are deployed and bundled into the `fabric-capacity-governance` initiative.
 
 ### Policy 1 — US Regions Only
 
@@ -108,6 +114,29 @@ Denies capacity names that do not match the naming pattern defined in [naming-st
 
 The same regex is enforced locally in `variables.tf`, so `terraform plan` will catch a non-compliant name before it reaches Azure.
 
+### Policy 3 — Admin Group Enforcement
+
+Denies any capacity whose `administrationMembers` contains anyone other than the `Fabric-Capacity-Admins` Entra group. The policy triggers a `Deny` if either condition is true:
+
+- Any member in the array is **not** the approved group's object ID
+- The approved group is **absent** from the array entirely
+
+This prevents ad-hoc individuals or other groups from being set as capacity admins through the portal or any other path.
+
+## RBAC — Fabric Capacity Administrator Role
+
+A custom Azure role (`Fabric Capacity Administrator`) is created and assigned exclusively to the `Fabric-Capacity-Admins` group at the policy scope. The role grants only the Fabric-specific actions needed to manage capacities:
+
+| Action | Purpose |
+|--------|---------|
+| `Microsoft.Fabric/capacities/read` | View capacity |
+| `Microsoft.Fabric/capacities/write` | Create or update capacity |
+| `Microsoft.Fabric/capacities/delete` | Delete capacity |
+| `Microsoft.Fabric/capacities/resume/action` | Resume a paused capacity |
+| `Microsoft.Fabric/capacities/suspend/action` | Pause a running capacity |
+
+> **Note:** If `Owner` or `Contributor` are already assigned at the subscription scope, those roles also carry `capacities/write`. Review existing broad role assignments and scope them down as needed — the custom role and policy together enforce intent, but broad roles at higher scopes can bypass the RBAC restriction. The Policy 3 `Deny` will still catch any capacity created with a non-compliant admin list regardless of who created it.
+
 ## Naming Standard
 
 See [naming-standard.md](naming-standard.md) for the full naming convention covering all Fabric resource types: capacities, workspaces, lakehouses, warehouses, pipelines, notebooks, semantic models, and more.
@@ -120,12 +149,12 @@ See [naming-standard.md](naming-standard.md) for the full naming convention cove
 | `location` | `string` | `eastus` | Azure region (US regions only) |
 | `capacity_name` | `string` | — | Name following `{BU}-{Function}-{Env}-{Region}` |
 | `sku_name` | `string` | `F2` | Fabric capacity SKU |
-| `administration_members` | `list(string)` | — | UPNs or object IDs of capacity admins |
+| `fabric_admins_group_name` | `string` | `Fabric-Capacity-Admins` | Display name of the Entra security group for capacity administration |
 | `cost_center` | `string` | — | Cost center tag value |
 | `created_by` | `string` | — | Created-by tag value |
 | `created_date` | `string` | `2026-03-18` | Created-date tag value (`YYYY-MM-DD`) |
 | `additional_tags` | `map(string)` | `{}` | Extra tags merged with required tags |
-| `policy_scope` | `string` | — | ARM ID of the subscription or management group for policy assignment |
+| `policy_scope` | `string` | — | ARM ID of the subscription or management group for policy assignment and role assignment |
 
 ## Outputs
 
@@ -133,6 +162,9 @@ See [naming-standard.md](naming-standard.md) for the full naming convention cove
 |--------|-------------|
 | `fabric_capacity_id` | Resource ID of the Fabric capacity |
 | `fabric_capacity_name` | Name of the Fabric capacity |
+| `fabric_admins_group_object_id` | Object ID of the resolved `Fabric-Capacity-Admins` Entra group |
 | `us_regions_policy_id` | Resource ID of the US-regions-only policy definition |
 | `naming_standard_policy_id` | Resource ID of the naming-standard policy definition |
-| `governance_initiative_id` | Resource ID of the Fabric Governance policy initiative |
+| `admin_group_policy_id` | Resource ID of the admin-group-only policy definition |
+| `fabric_capacity_admin_role_id` | Resource ID of the custom Fabric Capacity Administrator role definition |
+| `governance_initiative_id` | Resource ID of the Fabric Governance policy initiative (v2.0.0) |
