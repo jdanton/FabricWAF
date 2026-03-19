@@ -168,3 +168,38 @@ jobs:
         with:
           name: post-deploy-validation-report
           path: post-deploy-validation-report.json
+
+  # ---------------------------------------------------------------------------
+  # Job 3 — Configure Capacity
+  # Applies the configuration best practices defined in capacity-best-practices.md
+  # to the Fabric capacity via the Power BI Admin API.
+  # Runs after a successful deploy — idempotent, so safe to re-run at any time.
+  # ---------------------------------------------------------------------------
+  configure-capacity:
+    name: Configure Capacity
+    needs: deploy
+    runs-on: [self-hosted, fabric-gh-runner]
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -q azure-identity requests
+
+      - name: Apply capacity best practices
+        env:
+          # FABRIC_CAPACITY_ID  — GUID of the Fabric capacity
+          #   Obtain from Terraform: terraform -chdir=terraform output -raw fabric_capacity_id
+          #   Set as a GitHub Actions variable in repo Settings → Variables
+          FABRIC_CAPACITY_ID: ${{ vars.FABRIC_CAPACITY_ID }}
+          # FABRIC_ADMINS_GROUP — Object ID of the Fabric-Capacity-Admins Entra group
+          #   Obtain from Terraform: terraform -chdir=terraform output -raw fabric_admins_group_object_id
+          FABRIC_ADMINS_GROUP: ${{ vars.FABRIC_ADMINS_GROUP_OID }}
+        run: python scripts/configure_capacity.py
