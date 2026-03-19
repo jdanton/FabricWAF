@@ -1,0 +1,170 @@
+name: Fabric — Validate & Deploy to Production
+
+# Runs on every PR targeting main (validate only) and every push to main
+# (validate + deploy). The self-hosted runner authenticates to Fabric via
+# the managed identity attached to the fabric-gh-runner Azure VM — no
+# secrets or OIDC tokens are required.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write   # post validation results as a PR comment
+
+env:
+  FABRIC_API: "https://api.fabric.microsoft.com/v1"
+  PROD_WORKSPACE_PATTERN: "-prod"   # workspaces whose names end with -prod
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Job 1 — Validate
+  # Checks every item in every prod workspace against naming-standard.md and
+  # flags individual users with write-level workspace roles.
+  # Runs on every PR and every push to main.
+  # ---------------------------------------------------------------------------
+  validate:
+    name: Validate naming & security standards
+    runs-on: [self-hosted, fabric-gh-runner]
+
+    outputs:
+      passed: ${{ steps.run.outputs.passed }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -q azure-identity requests
+
+      - name: Run validation
+        id: run
+        env:
+          PROD_WORKSPACE_PATTERN: ${{ env.PROD_WORKSPACE_PATTERN }}
+          REPORT_PATH: validation-report.json
+        run: python scripts/validate_fabric.py
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report
+          path: validation-report.json
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('validation-report.json', 'utf8'));
+            const passed = report.summary.total_violations === 0;
+            const icon = passed ? '✅' : '❌';
+
+            const lines = [
+              `## ${icon} Fabric Governance Validation`,
+              '',
+              `| | |`,
+              `|---|---|`,
+              `| Workspaces checked | ${report.summary.workspaces_checked} |`,
+              `| Items checked | ${report.summary.items_checked} |`,
+              `| Naming violations | ${report.summary.naming_violations} |`,
+              `| Security violations | ${report.summary.security_violations} |`,
+              '',
+            ];
+
+            if (!passed) {
+              lines.push('### Violations');
+              for (const v of report.violations) {
+                const item = v.item ? `\`${v.item}\`` : '_workspace_';
+                lines.push(`- **[${v.workspace}]** ${item} (${v.type}): ${v.message}`);
+              }
+            } else {
+              lines.push('All naming and security checks passed. Safe to merge and deploy.');
+            }
+
+            const body = lines.join('\n');
+
+            // Update existing bot comment if present, otherwise create a new one
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body.includes('Fabric Governance Validation')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+  # ---------------------------------------------------------------------------
+  # Job 2 — Deploy
+  # Triggers a Fabric Deployment Pipeline to promote content to production.
+  # Only runs on push to main after validation passes.
+  # Requires manual approval via the "production" GitHub Environment.
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy to production
+    needs: validate
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.validate.outputs.passed == 'true'
+    runs-on: [self-hosted, fabric-gh-runner]
+    environment: production   # configure required reviewers in repo Settings → Environments
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -q azure-identity requests
+
+      - name: Trigger Fabric Deployment Pipeline
+        env:
+          # Set these as GitHub Actions variables (not secrets) in the repo settings
+          DEPLOYMENT_PIPELINE_ID: ${{ vars.FABRIC_DEPLOYMENT_PIPELINE_ID }}
+          SOURCE_STAGE_ORDER: ${{ vars.FABRIC_SOURCE_STAGE_ORDER }}  # e.g. 1 (staging)
+          TARGET_STAGE_ORDER: ${{ vars.FABRIC_TARGET_STAGE_ORDER }}  # e.g. 2 (production)
+        run: python scripts/deploy_fabric.py
+
+      - name: Post-deploy smoke check
+        env:
+          PROD_WORKSPACE_PATTERN: ${{ env.PROD_WORKSPACE_PATTERN }}
+          REPORT_PATH: post-deploy-validation-report.json
+        run: python scripts/validate_fabric.py
+
+      - name: Upload post-deploy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-deploy-validation-report
+          path: post-deploy-validation-report.json

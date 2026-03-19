@@ -1,0 +1,2574 @@
+{
+  "generated_at": "2026-03-19T10:17:34.233255+00:00Z",
+  "summary": {
+    "capacities_scanned": 1,
+    "capacity_region_violations": 0,
+    "workspaces_scanned": 158,
+    "items_scanned": 40,
+    "naming_violations": 185,
+    "security_violations": 0,
+    "total_violations": 185
+  },
+  "capacity_violations": [],
+  "workspaces": [
+    {
+      "id": "e8378c59-d72d-407d-b880-bc9d0772e948",
+      "name": "My Fabric Content",
+      "capacity_id": "600EF3F2-9838-4D64-B9E3-588124BFDE0D",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b07cbc88-073e-4853-9a44-6e870f0dad8a",
+      "name": "FabricTrainingWorkspace",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingLakehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingLakehouse' (SemanticModel) in workspace 'FabricTrainingWorkspace' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "wwidemo",
+          "object_type": "SemanticModel",
+          "message": "'wwidemo' (SemanticModel) in workspace 'FabricTrainingWorkspace' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingWarehouse' (SemanticModel) in workspace 'FabricTrainingWorkspace' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "wwidw",
+          "object_type": "SemanticModel",
+          "message": "'wwidw' (SemanticModel) in workspace 'FabricTrainingWorkspace' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "demodw",
+          "object_type": "SemanticModel",
+          "message": "'demodw' (SemanticModel) in workspace 'FabricTrainingWorkspace' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "Warehouse",
+          "message": "'DataflowsStagingWarehouse' (Warehouse) in workspace 'FabricTrainingWorkspace' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "f465c4fa-f6bd-4dc7-998f-e5165e7152ab",
+      "name": "Microsoft Fabric Capacity Metrics",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "Fabric Capacity Metrics",
+          "object_type": "Report",
+          "message": "'Fabric Capacity Metrics' (Report) in workspace 'Microsoft Fabric Capacity Metrics' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "Fabric Capacity Metrics",
+          "object_type": "SemanticModel",
+          "message": "'Fabric Capacity Metrics' (SemanticModel) in workspace 'Microsoft Fabric Capacity Metrics' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "6cb17131-1b70-48af-9fcf-9473b84aa211",
+      "name": "Microsoft Fabric Capacity Metrics 8/2/2024, 3:30:22 PM",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "76e40336-fcab-42be-8825-7ba2dd996870",
+      "name": "Development",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "LH1",
+          "object_type": "SemanticModel",
+          "message": "'LH1' (SemanticModel) in workspace 'Development' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingLakehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingLakehouse' (SemanticModel) in workspace 'Development' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingWarehouse' (SemanticModel) in workspace 'Development' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "Warehouse",
+          "message": "'DataflowsStagingWarehouse' (Warehouse) in workspace 'Development' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "59e72b73-0f46-4635-ab6b-d658b09209dd",
+      "name": "Production",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ce578b4a-fb7f-4601-9620-8509e1123d1d",
+      "name": "Testing",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingLakehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingLakehouse' (SemanticModel) in workspace 'Testing' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingWarehouse' (SemanticModel) in workspace 'Testing' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "LH1",
+          "object_type": "SemanticModel",
+          "message": "'LH1' (SemanticModel) in workspace 'Testing' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "Warehouse",
+          "message": "'DataflowsStagingWarehouse' (Warehouse) in workspace 'Testing' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b3edb82c-0333-4e90-9d48-83ad70799a0a",
+      "name": "Admin",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "4ecc6020-2d34-49f1-bdec-1734599f47f5",
+      "name": "devbranchjd",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingLakehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingLakehouse' (SemanticModel) in workspace 'devbranchjd' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "SemanticModel",
+          "message": "'DataflowsStagingWarehouse' (SemanticModel) in workspace 'devbranchjd' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "LH1",
+          "object_type": "SemanticModel",
+          "message": "'LH1' (SemanticModel) in workspace 'devbranchjd' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DataflowsStagingWarehouse",
+          "object_type": "Warehouse",
+          "message": "'DataflowsStagingWarehouse' (Warehouse) in workspace 'devbranchjd' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "32e4e073-3a82-488d-977d-7459afbce956",
+      "name": "testingoutthisdbthing",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "cfaffbb9-d0f3-4852-b9b9-e85b2402aa17",
+      "name": "AtlantaDemo",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "SQL1",
+          "object_type": "SemanticModel",
+          "message": "'SQL1' (SemanticModel) in workspace 'AtlantaDemo' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DemoSemanticCustom",
+          "object_type": "SemanticModel",
+          "message": "'DemoSemanticCustom' (SemanticModel) in workspace 'AtlantaDemo' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "13b4e5a1-8616-4bdd-a0dd-086edfee920b",
+      "name": "FUAM",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "Deploy_FUAM_Basic_Gen2",
+          "object_type": "Notebook",
+          "message": "'Deploy_FUAM_Basic_Gen2' (Notebook) in workspace 'FUAM' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e7582588-64d2-451f-8c2c-1826e74293fd",
+      "name": "fcukingfabric",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "8ee6bac9-1ddb-403e-984d-67c86786911d",
+      "name": "KeyVaultDemo",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "DemoKeyVaultNotebook",
+          "object_type": "Notebook",
+          "message": "'DemoKeyVaultNotebook' (Notebook) in workspace 'KeyVaultDemo' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "pipeline1",
+          "object_type": "DataPipeline",
+          "message": "'pipeline1' (DataPipeline) in workspace 'KeyVaultDemo' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e04b7883-09a2-44e7-987c-c4c2166151c4",
+      "name": "Mktgarchive new",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "fabafa74-1945-4c6d-9f13-9a754da4a1e1",
+      "name": "Procurement_sandbox 2024",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "78131a43-c10c-44db-8ab6-41acc36014d6",
+      "name": "Mktg-archive",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e0ed9513-a795-4bd9-bf9c-da52a3803b56",
+      "name": "HR-Analytics-QA",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "d4e6a097-70af-487f-8cb7-47a07dd19965",
+      "name": "Eng archive OLD",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "69c1e122-71fb-44a6-801d-c73769caf027",
+      "name": "Untitled",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "802278b9-5814-4b9d-8e54-734deb1a7099",
+      "name": "Sales workspace (copy)",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ab7175f9-2f39-4b67-a1bb-d9979710d57b",
+      "name": "HR Analytics DEV",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "49760b6c-0e2d-4e41-b02a-0c77f5f934f3",
+      "name": "New Workspace (1)",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "f5a665b4-f72b-4197-9681-bbf82b0eb0b3",
+      "name": "sales-report-2024-q1",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "f94eef50-7877-45e4-8ac1-dce8afd0f60a",
+      "name": "Sales Report March 2024",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "df5362ca-0643-43a2-a0c2-1246a04de9f5",
+      "name": "CUST_360_DW",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "28e2b2d9-8cae-4dfe-93dc-17471f54c14c",
+      "name": "Mktg - archive WIP",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ad6dfb16-4c20-4484-a6ed-95d8b17317aa",
+      "name": "Mktgsandbox new",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "52585e1c-effb-4a26-a52f-dc6470c8651d",
+      "name": "Sales_Report_Q1_2024",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "cd60941b-f0be-4980-b670-bee23943c070",
+      "name": "Sales (old)",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "eacf3f11-4c8f-4696-98bc-dce83a4797ce",
+      "name": "Eng test v2",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "7c7693e4-e7ec-40a3-8ec1-d4bf7e424484",
+      "name": "Finance_poc 2024",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e5a60368-1e1b-4ffe-a1d1-6b4bcac89fe8",
+      "name": "FinanceDW_Production",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "9e674c92-b29d-42b2-90df-5e5e568c46df",
+      "name": "Sales - FINAL",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "a00d3a12-ac37-4765-9299-7782b47294d3",
+      "name": "John's Workspace",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "aac318ec-d9cb-45b7-a6f9-079cdac59ae4",
+      "name": "Test3 - Copy",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "cb16249d-0542-4ca3-b182-768d4388cd1d",
+      "name": "zzz_archive",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "6cada1aa-db1f-4d27-b879-723da00e922a",
+      "name": "Marketing \u2605 Campaigns",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "303c0720-3ca4-46ad-a48b-7ec0a52478d9",
+      "name": "MKTG-CMP-ANL",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "15e415c2-82f3-40e5-ad43-db85d7efcc99",
+      "name": "2024 Sales",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ffdf9d0c-6465-402f-ba26-aa074d24ef20",
+      "name": "Finance-project v2",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ed02df10-96ad-4b3f-ab78-f23e47891cba",
+      "name": "Reporting \ud83d\udcca",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "4b129733-f823-4785-9d8a-ac0bedb81446",
+      "name": "Test2",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "2f331841-62c6-40ad-b7d2-16ef55effeb7",
+      "name": "HRbackup new",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "96415720-4eb4-44ed-b8e6-5bf1819d9992",
+      "name": "\u30c7\u30fc\u30bf\u5206\u6790",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "af1809ac-ad9c-4ab6-93c1-55cd82dc8c00",
+      "name": "DO NOT DELETE",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "98aba70b-7b63-4c64-a8b3-93fd9b6ab8ae",
+      "name": "HR Analytics",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "d0aa14a5-2f7c-44db-b55b-cf94f0f917be",
+      "name": "Customer Success \u2014 Dashboard",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "a194bd8f-0092-4bca-baaa-380c4ff2b34f",
+      "name": "FINANCE-DW-PROD",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "8c8e5405-6e4a-4c7f-8b72-19b0a5893d48",
+      "name": "delete me",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "f1bfea70-da79-48ae-9597-662a390c66e3",
+      "name": "Finance_DW prod",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "3afbe6d3-4e4a-43c7-baa0-8f79ea231a88",
+      "name": "temp",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "5fd35529-7038-4b72-8b9c-3226251ce03a",
+      "name": "hr-analytics-prod-backup",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b9947903-c236-4e80-9b03-30a34e37a775",
+      "name": "Sales Report 2024-03",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "0fcbc2ff-ae24-481b-9255-63ac52f25161",
+      "name": "HR Analytics PROD",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "7578fa3e-42d8-468b-9255-022f8f0e94c0",
+      "name": "R&D Experiments (v3)",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "06d93b87-0b7d-4b4e-bcca-352ad51997c0",
+      "name": "Fin-DW (Production)",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "cfadbdb5-91fd-45f7-99ab-b246b094f354",
+      "name": "Mike Analytics",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e8fe6610-a5e2-4407-8bc1-cf4ca47155b3",
+      "name": "HR-backup",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "7d3d6f07-0a62-4d76-a64c-002e062d4e15",
+      "name": "Sales-archive 2024",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ac195b24-5ef4-47e3-b22f-614ac1826bd1",
+      "name": "MFG_RPT_DLY_V2",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "46acab37-f5d4-4eda-814b-e6edd13c9e0b",
+      "name": "Data Team Shared",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "98a1b92e-e0ea-4368-a1ad-8593ae8d6366",
+      "name": "Financeproject",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b5b45b91-b9f1-45cc-bba2-c6402f9c6db2",
+      "name": "ACCT_REC_RPT",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "f0fa4047-d1c1-4cfc-bd36-032c89491826",
+      "name": "Legal_demo new",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "68f031e1-e08c-463a-9902-927273bfb138",
+      "name": "Finance project 2024",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "58cc548d-981a-4c5f-ae50-c0bb6b5aeee5",
+      "name": "HRproject (copy)",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "7d2abcf7-e976-453d-aca2-ac356b682896",
+      "name": "Carlos ML experiments",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "9a13dae8-0c9d-4c3c-bee0-e6613f60aae7",
+      "name": "Sales test v2",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "9bff52be-4b46-4e16-998c-859960cc37d6",
+      "name": "HR Analytics STAGING",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "55334fb7-4b46-4b29-ae37-8461a821c064",
+      "name": "Legalproject new",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "3dc109c8-e9be-44c4-abbf-3a60c777cd3f",
+      "name": "Sales - FINAL v2",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c6e582ea-f344-4681-a14a-9d2a907dec68",
+      "name": "SupplyChain_WH",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "788a36af-bc73-4aeb-a884-124ba6b1acac",
+      "name": "OPS_MON_RT",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "19090c49-e750-4a5b-875c-97a36f817780",
+      "name": "HR Analytics OLD PROD",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "8403dc09-ce8a-4bcb-84c6-9aec50c07c4c",
+      "name": "Mktg project FINAL",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b6757808-bb59-43bc-b5ff-7fd16d661032",
+      "name": "SalesReport_03_2024",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "87990564-365a-4b4e-8c3a-ad9ab9d93f0e",
+      "name": "Finanzas - Producci\u00f3n",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c9738753-f65a-4c8e-8b4e-c9d88c37f03a",
+      "name": "FIN_GL_ETL_PROC_WS",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ee625314-75d5-4e30-b121-add35c4271ef",
+      "name": "ENG_CI_CD_PIPE",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "587e534c-b6b8-4c12-9745-8ec828a0280d",
+      "name": "Procurement_project WIP",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "d2011bf6-0959-46a9-ae0c-722e544defbc",
+      "name": "New Workspace",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b267938d-ac85-4525-adbf-64d146cf74ea",
+      "name": "finance datawarehouse prod",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e7f57c5e-c10d-4663-a2a3-d7ddb82145e5",
+      "name": "Sales (new)",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "3d1866cd-20e6-4749-a652-c72565c7b361",
+      "name": "Test",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "d8352734-7402-4a9e-8644-ee41465ea822",
+      "name": "intern-project-2024",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "01f39189-0fa9-4c47-81c7-911729b5ed30",
+      "name": "Financesandbox 2024",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b416d47a-0877-482e-bb08-a44b64b47dfd",
+      "name": "New Hire Sandbox",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "944bab6e-dd2d-4080-8a62-9206972e3c2d",
+      "name": "Workspace",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "3549c118-0797-4b59-8733-b7e14b9a6199",
+      "name": "Finance poc OLD",
+      "capacity_id": "A622072A-B4C2-48E9-A9A5-6F94B841290F",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ca995224-de82-45a5-86a7-d4b481f96300",
+      "name": "Legal_workspace OLD",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b957541c-f7a4-49a7-ae4e-f31aa255f1ee",
+      "name": "Finance_sandbox new",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ab47bcfe-0404-4797-a3d0-fe5c90407391",
+      "name": "Ops poc FINAL",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "4bcd4b03-38c3-40a0-8a3a-217c64426b2f",
+      "name": "Sarah Test",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "27674b89-52cd-4733-8d31-352abf5c365a",
+      "name": "fin.dw.prod",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c482a22f-96e7-4395-80eb-bb5a986e6ccf",
+      "name": "FIN DW Prod",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "35124c74-248f-487d-94dd-a3c52ed1be17",
+      "name": "Procurement_archive",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "1c4b4a3d-614a-4715-afcb-4e98da85344b",
+      "name": "Jennifers Reports",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "523e4a49-ef5e-4134-ae5f-4db4a4c73721",
+      "name": "hr_analytics_development",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "44fc9623-0a47-4537-a055-48348262e159",
+      "name": "Procurement_project 2024",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b2414e61-c248-4bee-8c9b-8310c0daf611",
+      "name": "Sales & Revenue Tracking",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "2b19397c-3ea4-4dc1-bb20-6a73c7550397",
+      "name": "BizDev Analytics Space",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "6ef1ee85-20b9-475f-82e0-d7d29f29fff0",
+      "name": "Bob's Pipeline Stuff",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "36d1c4c8-64be-4b76-ade0-04c34d6f606b",
+      "name": "Mktg_archive 2024",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "17af60f9-b6e4-4608-98d9-a503a9f44ff7",
+      "name": "Finance_poc (copy)",
+      "capacity_id": "5F0B9739-4D22-4C17-8EFD-C8569B3DE477",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "0fba6585-c0ce-43aa-8147-ab18fb7166e4",
+      "name": "P&L Board Review",
+      "capacity_id": "A6D05AE0-B7C1-441B-AD6E-EEB3A613E00E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ea6e11fb-69f7-49e6-aa75-82eaf20a8bc3",
+      "name": "Kevins Copy of Finance",
+      "capacity_id": "97AC60AB-5F80-43D1-9A1B-1ED2AC13358B",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "a64a8cfa-b0d4-4513-ac20-4c85c1df167a",
+      "name": "HR Analytics - Dev",
+      "capacity_id": "9A6E8CB2-894C-4D82-A967-B4291D240870",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "10ffd18b-0533-4d21-af92-be5eafdbb03d",
+      "name": "Finance_DataWarehouse_PROD",
+      "capacity_id": "18E87DBE-8233-4740-9B90-B73DE96119A0",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "052897bd-94fc-41cd-8ead-d8ab6c98cf42",
+      "name": "Finance Data Warehouse - Production",
+      "capacity_id": "0F6CBD1E-012A-4C5B-918F-C7EE53271C02",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "20e5f60c-82f3-4e20-8d67-738506769732",
+      "name": "asdf",
+      "capacity_id": "0A5E0B96-9856-42E2-9A5B-CBA9AFEC04A5",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b55e159d-4589-403c-be46-62631d028392",
+      "name": "SLS_FCST_ML_DEV",
+      "capacity_id": "0E84A644-7B67-4AB3-BC8C-A7A1EA374C87",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e64d7c2f-eeb9-45c2-bf31-6441d899919a",
+      "name": "HR Analytics Production",
+      "capacity_id": "09C20AC1-B324-4D9C-AF86-B3C55B10F92E",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "7ec39132-6bd0-4281-87f5-5cb3a5eb120c",
+      "name": "Ops_workspace (copy)",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e96a9869-14f6-44b9-adae-82689fc93abb",
+      "name": "Ops-project 2024",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "cb0f43c9-8c9d-43da-a5c8-dd3f01118059",
+      "name": "Mktgtest WIP",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "5cbead97-4da9-4ca5-8eef-6bb1bb1a22ac",
+      "name": "Eng - demo copy",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c4354ef4-5ab1-4e9a-98cb-417e14bfe99f",
+      "name": "Sales new",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "55c41491-874d-4cb0-bae7-83b7103c84bb",
+      "name": "Legal_backup v2",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ba98a192-2c5e-4215-a334-7d936f30cf37",
+      "name": "Finance - project OLD",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "d3bfa166-b020-42ff-9f58-b6c8395aaacc",
+      "name": "Finance-project new",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e8f05b48-4697-4be2-8ba5-cc16c9141d34",
+      "name": "Sales old",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "091269dc-7f69-4f6f-a784-7571d8b2751e",
+      "name": "RD Experiments v3",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "324fd1ee-7275-4df9-89e1-c203b749940f",
+      "name": "Ops - backup v2",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c400a4d9-add3-4dac-96a3-4a34e5ba4581",
+      "name": "Procurementsandbox",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "5c40b8fc-1e62-4d7f-8f13-2d5326e1e6ce",
+      "name": "HR - test OLD",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "5f1e6ef9-39b6-4713-b558-9570bef07b4f",
+      "name": "Eng_workspace new",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "deda019d-beb4-480f-aac1-8f0836ae405e",
+      "name": "Sales test",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "615fe348-b8e4-45f3-8bd0-eb5be072cb53",
+      "name": "Mktg - backup OLD",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "d4250fad-e71a-4d36-9b70-beca7e5ececf",
+      "name": "Sales backup WIP",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "1b8147f0-a717-4540-8429-7d7724f0d8bf",
+      "name": "Financearchive v2",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e77e5e10-42fc-4368-9926-40f8db70c837",
+      "name": "Bobs Pipeline Stuff",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "70f47f38-dd14-453b-b8df-8aaa05ffdbb5",
+      "name": "Finance-test 2024",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "b576ee80-66f9-40e2-9930-79a5d4311ab8",
+      "name": "PL Board Review",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "20ad76ac-15b0-406a-bb35-f6bfd7036980",
+      "name": "Customer Success Dashboard",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "f9a1dd8b-02b2-4866-8f24-651fee96a846",
+      "name": "Financetest OLD",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "6463ddc1-efeb-4463-8563-65f4f836fe96",
+      "name": "Eng-poc copy",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "5971d54e-7c02-4d5f-8a95-eac79ea06fe4",
+      "name": "Procurement poc FINAL",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "56b098b3-740c-4ed3-b4ac-383040018d12",
+      "name": "Ops sandbox FINAL",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "4ee1d3bf-01e8-437e-a006-f6b03b6b48b8",
+      "name": "Mktg_test",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "68b40dfa-f375-4039-8d2e-5d96a63f5ced",
+      "name": "Eng - sandbox v2",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "dc924187-2c1d-4e6f-be4d-62dd696ed0c5",
+      "name": "Procurement test 2024",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "67c190b7-729e-4150-9a14-2982e12f16c3",
+      "name": "Procurement - poc v2",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "4e3d4bc2-e458-4ade-9794-91d8fe392b6a",
+      "name": "Finance - workspace",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "2de7672b-27b9-4f8d-961b-c69f634c21e3",
+      "name": "HR - test",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "a4443949-5bc4-4b97-9ddf-82d1602500f5",
+      "name": "Fin-DW Production",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "263e4086-0909-4503-9f80-8f64b050d18a",
+      "name": "findwprod",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "4501a5ef-b5bf-47d6-8600-7283edbb73d5",
+      "name": "New Workspace 1",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c448d08f-3b44-434c-b3cc-97f4ae46aaab",
+      "name": "Finance_workspace v2",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "efd09777-9e22-4986-b013-bae3baf2b62d",
+      "name": "Sales Revenue Tracking",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "bce24932-2857-4027-a73e-4a37e71b6b6a",
+      "name": "Ops - demo FINAL",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "2e3378b3-438c-4196-b4a0-9e3bca9de546",
+      "name": "Johns Workspace",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "14417fe1-a6c2-454f-81d0-071d14f1b216",
+      "name": "Ops_demo WIP",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "ee23c95f-5215-4600-8678-b5ffbd4b828b",
+      "name": "Sales - test FINAL",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "0f53e897-b8ea-4e70-8e4a-701489828308",
+      "name": "Mktg-test WIP",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "3e21af42-f6f3-41fd-bae9-2db7254df880",
+      "name": "Marketing Campaigns",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "e685e055-597e-4097-8b6b-b08f8ca28cf5",
+      "name": "Mktg - demo",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        }
+      ]
+    },
+    {
+      "id": "c0aacae9-0eb2-4c90-8372-ef6935324079",
+      "name": "Sales Final Final Final v3 -- Joey Copy Beta Presentation Demo",
+      "capacity_id": "1B56BD13-3656-4370-9093-FA22CE8E4D9A",
+      "owner_emails": [],
+      "violations": [
+        {
+          "check": "workspace_naming",
+          "severity": "medium",
+          "object": "",
+          "object_type": "Workspace",
+          "message": "Workspace '' does not match pattern {BU}-{Function}-{Env} (e.g. fin-dw-prod). See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "Notebook_1-Joey-Sales-Finance-HR-Engineering-Test v3 ",
+          "object_type": "Notebook",
+          "message": "'Notebook_1-Joey-Sales-Finance-HR-Engineering-Test v3 ' (Notebook) in workspace 'Sales Final Final Final v3 -- Joey Copy Beta Presentation Demo' does not match the required naming pattern. See naming-standard.md."
+        },
+        {
+          "check": "item_naming",
+          "severity": "medium",
+          "object": "env1-prod-dev",
+          "object_type": "Environment",
+          "message": "'env1-prod-dev' (Environment) in workspace 'Sales Final Final Final v3 -- Joey Copy Beta Presentation Demo' does not match the required naming pattern. See naming-standard.md."
+        }
+      ]
+    }
+  ]
+}
