@@ -155,7 +155,7 @@ def get_all(url: str, headers: dict, params: dict | None = None) -> list[dict]:
     so the caller can fall back or skip gracefully.
     """
     global _throttle_count
-    _COLLECTION_KEYS = ("value", "workspaces", "items", "users")
+    _COLLECTION_KEYS = ("value", "workspaces", "items", "users", "accessDetails")
 
     results, next_url = [], url
     throttle_attempts = 0
@@ -436,18 +436,36 @@ def check_workspace_ownership(ws_name: str, assignments: list[dict]) -> list[dic
        Write-level access must go through groups or service principals to
        remain auditable and revocable without per-person management.
 
-    The Fabric Admin API returns these fields per assignment:
-      workspaceRole  — Admin | Member | Contributor | Viewer
-      principalType  — User | Group | ServicePrincipal | ServicePrincipalProfile
-      emailAddress   — user@domain.com (for User principals)
-      identifier     — object ID (used when email is absent)
+    Both the member-scoped /roleAssignments and admin /users endpoints nest
+    principal data under a "principal" object with a "userDetails" sub-object:
+
+      member /roleAssignments:
+        { "role": "Admin",
+          "principal": { "id": "...", "type": "User",
+                         "userDetails": { "userPrincipalName": "u@domain.com" } } }
+
+      admin /admin/workspaces/{id}/users (collection key: "accessDetails"):
+        { "workspaceAccessDetails": { "workspaceRole": "Admin" },
+          "principal": { "id": "...", "type": "User",
+                         "userDetails": { "userPrincipalName": "u@domain.com" } } }
     """
     violations = []
     for a in assignments:
-        role  = a.get("workspaceRole", a.get("role", ""))
-        ptype = a.get("principalType", a.get("type", ""))
-        email = a.get("emailAddress") or a.get("userPrincipalName", "")
-        ident = a.get("identifier") or a.get("id") or a.get("principalId", "unknown")
+        principal = a.get("principal", {})
+        ptype = principal.get("type", a.get("principalType", ""))
+        ident = principal.get("id", a.get("identifier", a.get("id", "unknown")))
+        email = (
+            principal.get("userDetails", {}).get("userPrincipalName")
+            or principal.get("userPrincipalName")
+            or a.get("emailAddress")
+            or ""
+        )
+        # Role field differs by endpoint
+        role = (
+            a.get("role")
+            or a.get("workspaceRole")
+            or a.get("workspaceAccessDetails", {}).get("workspaceRole", "")
+        )
 
         # Only flag individual user accounts identified by an email address.
         # Groups and service principals are compliant regardless of role.
@@ -769,10 +787,19 @@ def main(dry_run: bool = False, report_only: bool = False) -> int:
         # Collect Admin-role members for the owner email
         owner_emails: list[str] = []
         for a in assignments:
-            role  = a.get("workspaceRole", a.get("role", ""))
-            ptype = a.get("principalType", a.get("type", ""))
-            pid   = a.get("id", a.get("principalId", ""))
-            email = a.get("emailAddress") or a.get("userPrincipalName")
+            principal = a.get("principal", {})
+            ptype = principal.get("type", a.get("principalType", ""))
+            pid   = principal.get("id", a.get("identifier", a.get("id", "")))
+            email = (
+                principal.get("userDetails", {}).get("userPrincipalName")
+                or principal.get("userPrincipalName")
+                or a.get("emailAddress")
+            )
+            role = (
+                a.get("role")
+                or a.get("workspaceRole")
+                or a.get("workspaceAccessDetails", {}).get("workspaceRole", "")
+            )
 
             if role == "Admin":
                 if not email and ptype in ("User", "Group"):
