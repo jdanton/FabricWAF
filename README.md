@@ -256,11 +256,12 @@ Because Fabric has no built-in policy engine, a GitHub Actions workflow running 
 
 ```
 PR → validate job → PR comment with results
-main push → validate job → (approval) → deploy job → post-deploy smoke check
+main push → validate job → (approval) → deploy job → post-deploy smoke check → configure-capacity job
 ```
 
 1. **Every PR** runs `scripts/validate_fabric.py` against all `*-prod` workspaces and posts results as a PR comment. A failing check blocks merge.
 2. **Every push to `main`** re-validates, then waits for manual approval via the `production` GitHub Environment before triggering the Fabric Deployment Pipeline.
+3. **After a successful deploy**, the `configure-capacity` job runs `scripts/configure_capacity.py` to enforce the settings defined in [capacity-best-practices.md](capacity-best-practices.md) via the Power BI Admin API. The step is idempotent — it only patches settings that differ from the target state.
 3. **After deploy**, validation runs again as a smoke check.
 
 ### Self-hosted runner & authentication
@@ -301,6 +302,8 @@ Any individual `User` account holding `Admin`, `Member`, or `Contributor` on a p
 | `FABRIC_DEPLOYMENT_PIPELINE_ID` | GUID of the Fabric Deployment Pipeline |
 | `FABRIC_SOURCE_STAGE_ORDER` | Stage index to promote from (e.g. `1` for staging) |
 | `FABRIC_TARGET_STAGE_ORDER` | Stage index to promote to (e.g. `2` for production) |
+| `FABRIC_CAPACITY_ID` | GUID of the Fabric capacity — from `terraform output -raw fabric_capacity_id` |
+| `FABRIC_ADMINS_GROUP_OID` | Object ID of the `Fabric-Capacity-Admins` Entra group — from `terraform output -raw fabric_admins_group_object_id` |
 
 **2. GitHub Environment**
 
