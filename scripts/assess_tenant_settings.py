@@ -443,8 +443,8 @@ def evaluate(setting: dict, live: dict | None, profile: str) -> dict:
         else:
             result["detail"] = "Scoped to a security group."
     else:
-        ok = True
-        result["detail"] = f"Unknown target '{target}'."
+        ok = False
+        result["detail"] = f"Invalid target '{target}' (expected 'off', 'on', 'scope', or None)."
 
     result["status"] = "compliant" if ok else "drift"
     return result
