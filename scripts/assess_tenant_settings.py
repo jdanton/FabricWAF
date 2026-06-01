@@ -521,6 +521,8 @@ def print_report(findings: list[dict], profile: str, uncatalogued: list[dict]) -
 
 def emit_update_calls(findings: list[dict]) -> None:
     """Print copy/paste-ready update calls for every drift finding."""
+    import shlex
+
     drift = [f for f in findings if f["status"] == "drift"]
     if not drift:
         print("\nNo drift to emit — tenant matches the profile.")
@@ -530,18 +532,24 @@ def emit_update_calls(findings: list[dict]) -> None:
     for f in drift:
         body = build_update_body(CATALOG_BY_NAME[f["settingName"]], f["target"])
         if body is None:
-            print(f"# {f['settingName']}: Scope target — set FABRIC_RESTRICT_GROUP to a "
-                  "security-group object ID, then:")
-            print(f"#   body would be: "
-                  f'{{"enabled": true, "enabledSecurityGroups": [{{"graphId": "<group-oid>", '
-                  f'"name": "<group-name>"}}]}}')
-            print(f"curl -X POST '{TENANT_SETTINGS_URL}/{f['settingName']}/update' \\")
-            print("  -H 'Authorization: Bearer <token>' -H 'Content-Type: application/json' \\")
-            print("  -d '<body above>'\n")
+            if f["target"] == SCOPE and not RESTRICT_GROUP:
+                print(
+                    f"# {f['settingName']}: Scope target — set FABRIC_RESTRICT_GROUP to a "
+                    "security-group object ID, then:"
+                )
+                print(
+                    "#   body would be: "
+                    '{"enabled": true, "enabledSecurityGroups": [{"graphId": "<group-oid>", "name": "<group-name>"}]}'
+                )
+                print(f"curl -X POST '{TENANT_SETTINGS_URL}/{f['settingName']}/update' \\")
+                print("  -H 'Authorization: Bearer <token>' -H 'Content-Type: application/json' \\")
+                print("  -d '<body above>'\n")
+                continue
+            print(f"# {f['settingName']}: ERROR — cannot build update body for target '{f['target']}'.")
             continue
         print(f"curl -X POST '{TENANT_SETTINGS_URL}/{f['settingName']}/update' \\")
         print("  -H 'Authorization: Bearer <token>' -H 'Content-Type: application/json' \\")
-        print(f"  -d '{json.dumps(body)}'\n")
+        print(f"  -d {shlex.quote(json.dumps(body))}\n")
 
 
 def apply_changes(findings: list[dict]) -> bool:
