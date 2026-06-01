@@ -562,10 +562,13 @@ def apply_changes(findings: list[dict]) -> bool:
     print(f"\nApplying {len(drift)} change(s)...")
     all_ok = True
     for i, f in enumerate(drift):
-        body = build_update_body(CATALOG_BY_NAME[f["settingName"]], f["target"])
         if body is None:
-            print(f"  SKIP  {f['settingName']} — Scope target needs FABRIC_RESTRICT_GROUP; "
-                  "left unchanged.")
+            if f["target"] == SCOPE and not RESTRICT_GROUP:
+                print(f"  SKIP  {f['settingName']} — Scope target needs FABRIC_RESTRICT_GROUP; "
+                      "left unchanged.")
+                continue
+            print(f"  FAIL  {f['settingName']} — cannot build update body for target '{f['target']}'.")
+            all_ok = False
             continue
         ok, msg = update_tenant_setting(f["settingName"], body)
         status = "OK   " if ok else "FAIL "
