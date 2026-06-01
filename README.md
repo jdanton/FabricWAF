@@ -16,8 +16,12 @@ FabricWAF/
 │   ├── validate_fabric.py        # Naming and security validation against prod workspaces
 │   ├── deploy_fabric.py          # Triggers Fabric Deployment Pipeline and polls for completion
 │   ├── audit_fabric.py           # Tenant-wide compliance audit with email reporting
+│   ├── configure_capacity.py     # Applies capacity-best-practices.md to a capacity
+│   ├── assess_tenant_settings.py # Risk-rated tenant-settings security assessment + apply
 │   └── create-bad-workspaces.py  # Demo script — generates 100 badly-named workspaces
 ├── audit-report.json             # Example audit output — 185 violations across 158 workspaces
+├── capacity-best-practices.md    # Target configuration state for a Fabric capacity
+├── tenant-settings-best-practices.md  # Security-rated tenant-settings catalog + profiles
 ├── naming-standard.md            # Naming conventions for all Fabric resources
 ├── reference-architecture.md     # Architecture narrative and component breakdown
 ├── reference-architecture.svg    # Architecture diagram
@@ -247,6 +251,114 @@ To run on a schedule, add it as a cron job on the `fabric-gh-runner` VM or trigg
 ```
 
 185 naming violations across 158 workspaces — every one of them preventable with the standards in this repo applied from day one.
+
+## Tenant Settings Security Assessment (`assess_tenant_settings.py`)
+
+`scripts/assess_tenant_settings.py` is a **Best Practice Analyzer for tenant
+settings**. It reads the live Fabric / Power BI tenant settings via the Fabric
+Admin REST API, compares each catalogued setting against a chosen recommendation
+profile, prints a risk-rated compliance report, writes a JSON report, and can
+optionally emit copy/paste update calls or apply the differences idempotently.
+
+The catalogue, risk ratings, and per-profile targets live in
+[tenant-settings-best-practices.md](tenant-settings-best-practices.md) — the
+human-readable source of truth — and are mirrored as the `CATALOG` data
+structure in the script (the same pattern as `capacity-best-practices.md` ↔
+`configure_capacity.py`).
+
+### Risk icons — accessible by shape, not just color
+
+Each setting carries a risk rating shown with a **distinct shape** as well as a
+color, plus a text label — so severity is readable without relying on color
+vision (≈8% of men cannot reliably distinguish the red/yellow/green circles in
+the original proposal):
+
+| Icon | Shape | Label | Meaning |
+|------|-------|-------|---------|
+| 🔺 `▲` | Triangle | **HIGH** | Significant security / DLP risk — public sharing, external egress, auth gaps, broad admin-write access |
+| 🔶 `◆` | Diamond | **MEDIUM** | Moderate risk needing governance controls — scope to a security group, restrict, or monitor |
+| 🟢 `●` | Circle | **LOW** | Minimal risk — productivity features, or settings that *strengthen* posture when on |
+
+The script prints the geometric glyphs `▲ / ◆ / ●` so the shapes survive in any
+terminal or log.
+
+### Profiles
+
+| Profile | Philosophy |
+|---------|-----------|
+| **Light** | Only the strong, broadly-agreeable recommendations (Publish to web off, Datamarts off, certified-visuals-only on). Minimal disruption. |
+| **Balanced** *(default)* | Adds governance controls — scope risky features to security groups, disable external-facing risks, turn on data protection and monitoring. |
+| **Paranoid** | Turns off every export / egress path that can be disabled and turns on all monitoring and information-protection settings. |
+
+### What it checks
+
+For each of the ~40 catalogued settings, the live state is compared to the
+profile target (`Off` / `On` / `Scope` to a security group / no opinion):
+
+| Status | Meaning |
+|--------|---------|
+| **compliant** | Live state matches the profile target |
+| **drift** | Actionable — does not match the target |
+| **informational** | The profile takes no position on this setting |
+| **not_found** | A catalogued `settingName` isn't returned by the tenant — flagged for review (possible API rename or feature unavailable) and **never auto-applied** |
+
+Settings present in the tenant but not catalogued are counted as
+**uncatalogued** and left untouched.
+
+### Authentication
+
+Uses `DefaultAzureCredential` (the `fabric-gh-runner` managed identity). The
+identity must be a **Fabric administrator** — or a service principal granted
+tenant-settings admin access — with:
+
+| Scope | Used for |
+|-------|----------|
+| `Tenant.Read.All` | Report-only and `--emit` runs |
+| `Tenant.ReadWrite.All` | Additionally required for `--apply` |
+
+The Fabric Admin tenant-settings API is rate limited to **25 requests/minute**;
+the script paces `--apply` accordingly and honors `Retry-After` on 429s.
+
+### Usage
+
+```bash
+pip install azure-identity requests
+
+# Report against the Balanced profile (default)
+python scripts/assess_tenant_settings.py
+
+# Pick a profile
+python scripts/assess_tenant_settings.py --profile light
+python scripts/assess_tenant_settings.py --profile paranoid
+
+# Print copy/paste-ready update calls for every non-compliant setting
+python scripts/assess_tenant_settings.py --emit
+
+# Apply the differences (idempotent — only settings that differ are patched)
+python scripts/assess_tenant_settings.py --profile balanced --apply
+
+# Apply, scoping 'Scope'-target settings to a specific security group
+FABRIC_RESTRICT_GROUP=<group-object-id> \
+  python scripts/assess_tenant_settings.py --profile balanced --apply
+```
+
+`Scope` targets ("enable, but restrict to a security group") are **reported but
+not auto-applied** unless `FABRIC_RESTRICT_GROUP` is set — blindly writing a
+group restriction could lock out legitimate users or automation.
+
+### CI gate
+
+`--fail-on {high,medium,low,none}` (default `high`) makes the script exit
+non-zero when drift at or above that risk exists, so it can run as a scheduled
+gate alongside `audit_fabric.py`:
+
+```bash
+# Fail the job only if there is HIGH-risk tenant-settings drift
+python scripts/assess_tenant_settings.py --profile balanced --fail-on high
+```
+
+Exit codes: `0` clean (or `--apply` succeeded), `1` drift at/above threshold (or
+an apply failed), `2` configuration / authentication error.
 
 ## GitHub Actions — Production Deployment Gate
 
