@@ -106,7 +106,7 @@ profile takes no position on that setting (it is left as-is and reported as
 
 | Risk | Setting | `settingName` | Light | Balanced | Paranoid | Why it is a risk |
 |------|---------|---------------|:-----:|:--------:|:--------:|------------------|
-| 🔶 MED | Create Datamarts | `DatamartTenant` | Off | Off | Off | Spins up an autonomously-provisioned SQL endpoint per datamart — ungoverned data copies and a new surface to secure. The email thread flags disabling this as a strong recommendation. |
+| 🔶 MED | Create Datamarts | `DatamartTenant` | Off | Off | Off | Spins up an autonomously-provisioned SQL endpoint per datamart — ungoverned data copies and a new surface to secure. The email thread flags disabling this as a strong recommendation. **Note (June 2026):** the datamart *feature* has been retired (creation blocked June 2025, removed ~Nov 2025; superseded by Fabric Data Warehouse), but the tenant setting still exists — keeping it Off is still correct. |
 
 ### Developer settings
 
@@ -212,6 +212,33 @@ Ad-hoc changes made through the Fabric admin portal will be reported as drift on
 the next assessment run, and overwritten if the assessment is run with `--apply`.
 
 ---
+
+## Recent ecosystem changes (verified June 2026)
+
+This catalog was checked against the Fabric ecosystem in June 2026. Summary:
+
+- **No breaking API changes.** The List endpoint is GA; **Update Tenant Setting
+  remains in Preview** (plan for production accordingly). Request/response shape,
+  auth scopes, and the 25-requests/minute limit are unchanged.
+- **All catalogued settings are still valid.** The service-principal API setting
+  was split (2025) into `ServicePrincipalAccessGlobalAPIs` and
+  `ServicePrincipalAccessPermissionAPIs` — both are catalogued above.
+- **`DatamartTenant`** governs a now-retired feature (see its row) but the
+  setting persists.
+
+**New security-relevant settings to consider adding.** Microsoft has not
+published the internal `settingName` for most of these, so they are intentionally
+**not hardcoded** here — doing so would defeat the name-drift guard. The
+assessment already surfaces them in the **uncatalogued in tenant** count; resolve
+the real name from the live List API (match on `title`) before adding a row.
+
+| Area | Setting (UI title) | Internal name | Notes |
+|------|--------------------|---------------|-------|
+| Identity governance | Define maximum number of Fabric identities in a tenant | `ConfigureFabricIdentityTenantLimit` *(confirmed)* | GA 2026-01-28. Numeric limit (Integer property), not on/off — needs a property-target extension to assess/apply. |
+| Copilot / AI | Copilot & Fabric data-agent governance group, "approved items only" in standalone Copilot | *unpublished* | Resolve at runtime. Watch the **Copilot capacity designation** setting — default-on as of 2026-02-12. |
+| DLP / egress | Restrict notebook data export / rich-output download | *unpublished* | New exfiltration control (GA ~2026-03); fits the Paranoid profile's egress lockdown. |
+| Logging | Include end-user identifiers (EUII) in OneLake diagnostic logs | *unpublished* | Privacy / monitoring trade-off. |
+| AI surface | Power BI MCP server endpoint (preview) | *unpublished* | New AI/automation attack surface worth governing. |
 
 ## References
 

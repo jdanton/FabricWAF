@@ -303,7 +303,17 @@ profile target (`Off` / `On` / `Scope` to a security group / no opinion):
 | **not_found** | A catalogued `settingName` isn't returned by the tenant — flagged for review (possible API rename or feature unavailable) and **never auto-applied** |
 
 Settings present in the tenant but not catalogued are counted as
-**uncatalogued** and left untouched.
+**uncatalogued** and left untouched. Run with `--show-uncatalogued` to list them
+by name and group — useful for spotting newly-shipped settings (e.g. Copilot/AI,
+DLP, or identity-governance toggles released after this catalog was written) that
+may warrant adding to the catalog.
+
+> **Ecosystem currency (verified June 2026).** The API contract and all
+> catalogued `settingName` values were re-checked against Microsoft Learn in
+> June 2026 — no breaking changes; the Update API remains in Preview. See the
+> "Recent ecosystem changes" section of
+> [tenant-settings-best-practices.md](tenant-settings-best-practices.md) for new
+> settings worth adding.
 
 ### Authentication
 
