@@ -475,7 +475,8 @@ def build_update_body(setting: dict, target: str) -> dict | None:
 # Reporting
 # ---------------------------------------------------------------------------
 
-def print_report(findings: list[dict], profile: str, uncatalogued: list[dict]) -> None:
+def print_report(findings: list[dict], profile: str, uncatalogued: list[dict],
+                 show_uncatalogued: bool = False) -> None:
     drift = [f for f in findings if f["status"] == "drift"]
     compliant = [f for f in findings if f["status"] == "compliant"]
     info = [f for f in findings if f["status"] == "informational"]
@@ -517,6 +518,18 @@ def print_report(findings: list[dict], profile: str, uncatalogued: list[dict]) -
     print(f"  Catalogued not found : {len(not_found)}")
     print(f"  Uncatalogued in tenant: {len(uncatalogued)} (not assessed)")
     print("-" * 78)
+
+    if show_uncatalogued and uncatalogued:
+        # Surface settings the tenant exposes that we don't yet catalogue, so new
+        # toggles (e.g. Copilot/AI, DLP, identity governance shipped after this
+        # catalog was written) are noticed and can be reviewed for inclusion.
+        print(f"\nUNCATALOGUED SETTINGS ({len(uncatalogued)}) — present in tenant, not assessed:")
+        for s in sorted(uncatalogued, key=lambda x: (x.get("tenantSettingGroup") or "",
+                                                      x.get("settingName") or "")):
+            grp = s.get("tenantSettingGroup") or "?"
+            state = "on" if s.get("enabled") else "off"
+            print(f"  [{grp}] {s.get('settingName')} ({state}) — {s.get('title', '')}")
+        print("-" * 78)
 
 
 def emit_update_calls(findings: list[dict]) -> None:
@@ -625,6 +638,9 @@ def main() -> int:
     parser.add_argument("--fail-on", choices=["high", "medium", "low", "none"],
                         default="high",
                         help="Exit non-zero if drift at/above this risk exists (default: high)")
+    parser.add_argument("--show-uncatalogued", action="store_true",
+                        help="List settings present in the tenant but not in the catalog "
+                             "(useful for spotting newly-shipped settings to review)")
     args = parser.parse_args()
 
     print(f"Fetching tenant settings from {TENANT_SETTINGS_URL} ...")
@@ -640,7 +656,7 @@ def main() -> int:
     findings = [evaluate(s, live_by_name.get(s["settingName"]), args.profile) for s in CATALOG]
     uncatalogued = [s for s in live_settings if s.get("settingName") not in CATALOG_BY_NAME]
 
-    print_report(findings, args.profile, uncatalogued)
+    print_report(findings, args.profile, uncatalogued, args.show_uncatalogued)
 
     if args.emit:
         emit_update_calls(findings)
