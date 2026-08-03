@@ -18,3 +18,11 @@ env/
 
 # OS
 .DS_Store
+
+# --- Real tenant outputs (private — never commit) ---
+scripts/*.csv
+scripts/*_tenant_settings.json
+tenant-settings-report.json
+audit-report.json
+ID-Fabric.md
+scripts/schema.txt
