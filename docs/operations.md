@@ -39,9 +39,11 @@ The notebooks have dependencies; run them in this order:
 
 ```
 1. gateway_inventory_to_lakehouse        (independent)
-2. connection_inventory_to_lakehouse     (independent) ──┐
-3. gold_governance_to_lakehouse          (needs #2)      │
-4. build_semantic_model                  (needs #3)      │  governance track
+2. workspace_access_to_lakehouse         (independent)
+   └─ build_workspace_access_model       (needs #2 — Workspace_Access model)
+3. connection_inventory_to_lakehouse     (independent) ──┐
+4. gold_governance_to_lakehouse          (needs #3)      │
+5. build_semantic_model                  (needs #4)      │  governance track
    └─ add_file_extension_column          (one-off, after the model exists)
 
 A. heavy_interactive_workloads_to_lakehouse   (independent)   ┐ performance track

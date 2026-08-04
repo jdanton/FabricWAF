@@ -111,6 +111,47 @@ Per-item usage from **List Item Connections** (all governed item types).
 
 ---
 
+## Workspace access (`workspace_access_to_lakehouse`)
+
+All daily snapshots (partitioned by `snapshot_date`).
+
+### `workspace_access` — snapshot
+One row per (workspace, principal) — **all** principals (users, groups, service principals).
+
+| Column | Notes |
+|---|---|
+| `workspace_id`, `workspace_name` | |
+| `workspace_state`, `workspace_type` | e.g. `Active` / `Workspace` |
+| `capacity_id` | |
+| `principal_id` | AAD object id (`graphId`) or identifier |
+| `principal_type` | normalized: `User` / `Group` / `ServicePrincipal` |
+| `principal_type_raw` | as returned by the API: `User` / `Group` / `App` |
+| `display_name` | |
+| `email` | populated for users |
+| `role` | `Admin` / `Member` / `Contributor` / `Viewer` |
+| `is_write_role` | true for Admin / Member / Contributor |
+| `scan_timestamp`, `snapshot_date` | |
+
+### `workspace_user_access` — snapshot
+`workspace_access` filtered to individual users (`principal_type = User`).
+
+`workspace_id`, `workspace_name`, `capacity_id`, `user_id`, `user_name`, `email`, `role`,
+`is_write_role`, `scan_timestamp`, `snapshot_date`.
+
+### `workspace_user_access_summary` — snapshot
+One row per user — the "where does this person have access" rollup.
+
+| Column | Notes |
+|---|---|
+| `user_id`, `user_name`, `email` | |
+| `n_workspaces` | distinct workspaces the user has direct access to |
+| `n_admin`, `n_member`, `n_contributor`, `n_viewer` | assignment counts by role |
+| `has_write_access` | true if the user holds any write-level role anywhere |
+| `workspaces` | `name:role` list across all their workspaces |
+| `scan_timestamp`, `snapshot_date` | |
+
+---
+
 ## Gold marts (`gold_governance_to_lakehouse`)
 
 ### `report_model_map` — current overwrite

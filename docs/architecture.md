@@ -64,13 +64,14 @@ runner authenticates with a VM managed identity — no secrets. See
 
 ## Pillar 3 — Management lakehouse
 
-Six notebooks (`notebooks/`) build a tenant-wide governance/observability dataset in
+Seven notebooks (`notebooks/`) build a tenant-wide governance/observability dataset in
 `lh_fabric_management`:
 
 | Domain | Notebooks | Source APIs |
 |---|---|---|
 | **Gateways** | `gateway_inventory_to_lakehouse` | `/v2.0/myorg/gatewayclusters` (admin), metadata scanner |
 | **Connections** | `connection_inventory_to_lakehouse` | `/v1/connections`, scanner, `List Item Connections` |
+| **Workspace access** | `workspace_access_to_lakehouse` | Power BI Admin `groups?$expand=users` |
 | **Governance marts** | `gold_governance_to_lakehouse` | `/admin/reports` + the connection map |
 | **Performance** | `heavy_interactive_workloads_to_lakehouse` | Fabric Capacity Metrics model (DAX) |
 | **Serving** | `build_semantic_model`, `build_interactive_workload_model` | Direct Lake over the gold tables |

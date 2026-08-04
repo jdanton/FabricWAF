@@ -1,6 +1,6 @@
 # Management Lakehouse
 
-Six PySpark notebooks (`notebooks/`) build a tenant-wide governance & observability
+Eight PySpark notebooks (`notebooks/`) build a tenant-wide governance & observability
 dataset in the **`lh_fabric_management`** lakehouse and serve it through Direct Lake
 semantic models. They run inside Fabric under a **Fabric administrator** identity.
 
@@ -8,10 +8,12 @@ semantic models. They run inside Fabric under a **Fabric administrator** identit
 |---|---|---|---|
 | 1 | `gateway_inventory_to_lakehouse.ipynb` | gateway inventory tables | `/v2.0/myorg/gatewayclusters` + scanner |
 | 2 | `connection_inventory_to_lakehouse.ipynb` | connection inventory tables | `/v1/connections` + scanner + item connections |
-| 3 | `gold_governance_to_lakehouse.ipynb` | `gold_file_dependencies`, `gold_report_risk` | `/admin/reports` + connection map |
-| 4 | `heavy_interactive_workloads_to_lakehouse.ipynb` | `gold_heavy_interactive_items` | Fabric Capacity Metrics model (DAX) |
-| 5 | `build_semantic_model.ipynb` | `Fabric_Governance` Direct Lake model + measures | gold tables (1–3) |
-| 6 | `build_interactive_workload_model.ipynb` | `Interactive_Workloads` Direct Lake model + measures | gold table (4) |
+| 3 | `workspace_access_to_lakehouse.ipynb` | `workspace_access`, `workspace_user_access`, `workspace_user_access_summary` | Power BI Admin `groups?$expand=users` |
+| 4 | `gold_governance_to_lakehouse.ipynb` | `gold_file_dependencies`, `gold_report_risk` | `/admin/reports` + connection map |
+| 5 | `heavy_interactive_workloads_to_lakehouse.ipynb` | `gold_heavy_interactive_items` | Fabric Capacity Metrics model (DAX) |
+| 6 | `build_semantic_model.ipynb` | `Fabric_Governance` Direct Lake model + measures | gold tables |
+| 7 | `build_interactive_workload_model.ipynb` | `Interactive_Workloads` Direct Lake model + measures | heavy-workload mart |
+| 8 | `build_workspace_access_model.ipynb` | `Workspace_Access` Direct Lake model + measures | workspace-access tables |
 
 Plus `add_file_extension_column.ipynb` — a one-off that adds the `file_extension`
 column to the `Fabric_Governance` model (Direct Lake does not auto-add new source
@@ -105,7 +107,36 @@ Data-source → workspace/semantic-model bindings come from the **metadata scann
 
 ---
 
-## 3 — Gold governance marts
+## 3 — Workspace security assignments
+
+`workspace_access_to_lakehouse.ipynb` — every workspace's role assignments, with a focus
+on **individual user accounts** (vs Entra groups / service principals). Answers *"where do
+individual users have direct workspace access, and at what role?"*
+
+- **One tenant-wide call.** Uses the Power BI Admin endpoint
+  `GET /v1.0/myorg/admin/groups?$top=5000&$expand=users`, which returns every workspace
+  **with** its role assignments inline (display name, email, `principalType`, role), paged
+  by `$skip`. This avoids per-workspace calls (and their throttling), and the response
+  already carries names/emails so **no Microsoft Graph lookups are needed**. A
+  per-workspace `/admin/workspaces/{id}/users` fallback covers any workspace returned
+  without an expanded `users` list.
+- `principalType` (`User` / `Group` / `App`) separates individual users from groups and
+  service principals; `groupUserAccessRight` gives the role. Write-level roles
+  (**Admin / Member / Contributor**) held by a `User` are the governance risk.
+- Personal workspaces (`PersonalGroup`) are skipped — single-user by design.
+
+**Tables** (daily snapshots): `workspace_access` (all principals),
+`workspace_user_access` (users only, with `is_write_role`), and
+`workspace_user_access_summary` (per-user rollup — workspace count, role breakdown, and
+whether the user holds write access anywhere).
+
+> Complements `audit_fabric.py`: the audit *flags* users holding write roles as
+> violations, whereas this notebook *inventories* all direct-user access (including
+> Viewer) and pivots it per user for reporting and trend analysis.
+
+---
+
+## 4 — Gold governance marts
 
 `gold_governance_to_lakehouse.ipynb` — turns the connection map into two decision-ready
 marts.
@@ -135,7 +166,7 @@ collapsing the `Unknown`/`Other` buckets. Extra buckets added here: `SharePoint`
 
 ---
 
-## 4 — Heavy interactive workloads (performance)
+## 5 — Heavy interactive workloads (performance)
 
 `heavy_interactive_workloads_to_lakehouse.ipynb` (Fabric folder **`Performance`**) —
 ranks reports & semantic models by **interactive** CU so you can prioritise what to move
@@ -159,7 +190,7 @@ CU, `interactive_ops`, `top_operation`, `artifact_kind`, workspace, capacity).
 
 ---
 
-## 5 & 6 — Direct Lake serving models
+## 6, 7 & 8 — Direct Lake serving models
 
 Both use **semantic-link-labs** (`sempy_labs`). The critical call signature (it drifted
 across versions — `tables` not `lakehouse_tables`, and `source`/`source_type` are
@@ -181,6 +212,12 @@ Measures are added over a TOM connection (`connect_semantic_model(..., readonly=
 - **`build_interactive_workload_model.ipynb`** → `Interactive_Workloads` with measures
   `Interactive CU`, `Background CU`, `Total CU`, `% Interactive`, `Interactive
   Operations`, `Items`.
+- **`build_workspace_access_model.ipynb`** → `Workspace_Access` over `workspace_access` +
+  `workspace_user_access_summary`, with measures `Access Assignments`, `User Assignments`,
+  `Group Assignments`, `Service Principal Assignments`, `Distinct Users`, `Write-level
+  User Assignments`, `Admin User Assignments`, `% Access via Individual Users`. Because
+  these are **daily snapshots**, each measure pins to the latest `snapshot_date` (via
+  `CALCULATE(MAX(snapshot_date), ALL(...))`) so re-runs don't double-count.
 
 **Reports are built in the Fabric UI, not generated.** `create_report_from_reportjson`
 was tried and abandoned — the generated report JSON is version-sensitive and hangs on
@@ -244,4 +281,5 @@ notebooks in a `Performance` folder.
 | Cloud connection datasources | `/v2.0/myorg/gatewayClusterDatasources` | **HTTP 501** — not available |
 | Item connections | `GET /v1/workspaces/{ws}/items/{id}/connections` | Needs `Item.ReadWrite.All`; no admin variant |
 | Report → dataset lineage | `GET /admin/reports` | Tenant-wide |
+| All workspace role assignments | `GET /v1.0/myorg/admin/groups?$expand=users` | Tenant-wide; returns each workspace's users + roles inline (paged by `$skip`) — no per-workspace call, no Graph lookups |
 | Capacity CU by item/op | Capacity Metrics model via `executeQueries` | Facts DirectQuery-gated — bind params with `Default.UpdateParameters` first |

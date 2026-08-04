@@ -251,7 +251,7 @@ To run on a schedule, add it as a cron job on the `fabric-gh-runner` VM or trigg
 
 ### Example output
 
-[`audit-report.json`](audit-report.json) is a real report generated against this tenant. It illustrates exactly what ungoverned Fabric environments accumulate over time — and why the naming standard and deployment gate exist:
+`audit-report.json` — generated locally by the audit (gitignored, since it contains real tenant data) — illustrates exactly what ungoverned Fabric environments accumulate over time, and why the naming standard and deployment gate exist:
 
 ```json
 {
