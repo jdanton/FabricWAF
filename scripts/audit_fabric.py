@@ -89,6 +89,12 @@ _TOK   = r"[a-z][a-z0-9_]*"
 
 WORKSPACE_PATTERN = re.compile(rf"^{_BU}-[a-z][a-z0-9-]*-{_ENV}$")
 
+# Region short codes belong in capacity names only (naming-standard.md). Any
+# workspace or item name carrying one as a token is flagged, even when the
+# item type has no pattern of its own. Keep in sync with terraform/policy.tf.
+_REGION_CODES = r"(?:eus|eus2|wus|wus2|wus3|cus|ncus|scus|wcus)"
+REGION_TOKEN_PATTERN = re.compile(rf"(?:^|[-_]){_REGION_CODES}(?:[-_]|$)")
+
 ITEM_PATTERNS: dict[str, re.Pattern] = {
     "Lakehouse":          re.compile(rf"^lh_{_BU}_{_LAYER}_{_ENV}$"),
     "Warehouse":          re.compile(rf"^wh_{_BU}_{_TOK}_{_ENV}$"),
@@ -107,6 +113,18 @@ ITEM_PATTERNS: dict[str, re.Pattern] = {
     "Reflex":             re.compile(rf"^rx_{_BU}_{_TOK}_{_TOK}$"),
     "Environment":        re.compile(rf"^env_{_BU}_{_TOK}_{_ENV}$"),
     "Shortcut":           re.compile(rf"^sc_{_TOK}_{_TOK}$"),
+    "PolicySet":          re.compile(rf"^ps_(?:tenant_{_TOK}|cap_{_BU}_{_ENV}_{_TOK})$"),
+    "VariableLibrary":    re.compile(rf"^vl_{_BU}_{_TOK}$"),
+    "CopyJob":            re.compile(rf"^cj_{_BU}_{_TOK}_to_{_LAYER}_{_FREQ}$"),
+    "SQLDatabase":        re.compile(rf"^sqldb_{_BU}_{_TOK}_{_ENV}$"),
+    "MirroredDatabase":   re.compile(rf"^mir_{_BU}_{_TOK}_{_ENV}$"),
+    "Eventhouse":         re.compile(rf"^eh_{_BU}_{_TOK}_{_ENV}$"),
+    "KQLDashboard":       re.compile(rf"^rtd_{_BU}_{_TOK}_{_TOK}$"),
+    "UserDataFunction":   re.compile(rf"^udf_{_BU}_{_TOK}_{_TOK}$"),
+    "DataAgent":          re.compile(rf"^da_{_BU}_{_TOK}_{_TOK}$"),
+    "ApacheAirflowJob":   re.compile(rf"^af_{_BU}_{_TOK}_{_TOK}$"),
+    "DataBuildToolJob":   re.compile(rf"^dbt_{_BU}_{_TOK}_{_LAYER}$"),
+    "GraphQLApi":         re.compile(rf"^gql_{_BU}_{_TOK}_{_ENV}$"),
 }
 
 # ---------------------------------------------------------------------------
@@ -404,6 +422,30 @@ def check_capacity_region(cap: dict) -> list[dict]:
         }]
     return []
 
+def check_tenant_policy_set() -> dict:
+    """
+    Report which Fabric policy set (preview) is active at Tenant scope.
+
+    Informational only: it isn't counted in total_violations while Fabric
+    policies are in preview. Requires Fabric administrator (Tenant.Read.All).
+    Capacity-scoped sets need capacity-admin rights per capacity and aren't
+    checked here (see GET /v1/capacities/{id}/policySets/active).
+    """
+    try:
+        resp = requests.get(f"{FABRIC_API}/admin/policySets/active",
+                            params={"beta": "true"}, headers=fabric_headers(), timeout=30)
+    except requests.RequestException as exc:
+        return {"active": None, "error": str(exc)}
+    if resp.status_code == 404:
+        return {"active": False}
+    if not resp.ok:
+        return {"active": None, "error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
+    body = resp.json() if resp.content else {}
+    if not body.get("id"):
+        return {"active": False}
+    return {"active": True, "id": body["id"], "displayName": body.get("displayName"),
+            "workspaceId": body.get("workspaceId")}
+
 def check_workspace_name(ws: dict) -> list[dict]:
     name = ws.get("displayName", "")
     if not WORKSPACE_PATTERN.match(name):
@@ -415,6 +457,17 @@ def check_workspace_name(ws: dict) -> list[dict]:
             "message": (
                 f"Workspace '{name}' does not match pattern {{BU}}-{{Function}}-{{Env}} "
                 "(e.g. fin-dw-prod). See naming-standard.md."
+            ),
+        }]
+    if REGION_TOKEN_PATTERN.search(name):
+        return [{
+            "check": "workspace_naming",
+            "severity": "medium",
+            "object": name,
+            "object_type": "Workspace",
+            "message": (
+                f"Workspace '{name}' contains a region code. Region belongs in the "
+                "capacity name only. See naming-standard.md."
             ),
         }]
     return []
@@ -510,9 +563,8 @@ def check_item_names(ws_name: str, items: list[dict]) -> list[dict]:
         item_name = item.get("displayName", "")
         item_type = item.get("type", "Unknown")
         pattern   = ITEM_PATTERNS.get(item_type)
-        if pattern is None:
-            continue  # unknown/new item type — skip rather than false-positive
-        if not pattern.match(item_name):
+        # Unknown/new item types have no pattern, but still get the region check.
+        if pattern is not None and not pattern.match(item_name):
             violations.append({
                 "check": "item_naming",
                 "severity": "medium",
@@ -522,6 +574,17 @@ def check_item_names(ws_name: str, items: list[dict]) -> list[dict]:
                     f"'{item_name}' ({item_type}) in workspace '{ws_name}' "
                     "does not match the required naming pattern. "
                     "See naming-standard.md."
+                ),
+            })
+        elif REGION_TOKEN_PATTERN.search(item_name):
+            violations.append({
+                "check": "item_naming",
+                "severity": "medium",
+                "object": item_name,
+                "object_type": item_type,
+                "message": (
+                    f"'{item_name}' ({item_type}) in workspace '{ws_name}' contains a "
+                    "region code. Region belongs in the capacity name only."
                 ),
             })
     return violations
@@ -831,6 +894,9 @@ def main(dry_run: bool = False, report_only: bool = False) -> int:
 
     print()  # newline after progress bar
 
+    # ---- Fabric policies (preview, informational) ---------------------------
+    tenant_policy = check_tenant_policy_set()
+
     # ---- Build report ------------------------------------------------------
     report = {
         "generated_at": datetime.now(UTC).isoformat() + "Z",
@@ -856,6 +922,7 @@ def main(dry_run: bool = False, report_only: bool = False) -> int:
             for v in check_capacity_region(cap)
         ],
         "workspaces": workspace_results,
+        "fabric_policies": {"tenant": tenant_policy},
     }
 
     with open(REPORT_PATH, "w") as f:
@@ -872,6 +939,10 @@ def main(dry_run: bool = False, report_only: bool = False) -> int:
     print(f"  Naming violations          : {s['naming_violations']}")
     print(f"  Security violations        : {s['security_violations']}")
     print(f"  Total violations           : {s['total_violations']}")
+    tp = report["fabric_policies"]["tenant"]
+    tp_text = ({True: f"active — {tp.get('displayName')}", False: "none active (recommend ps_tenant_baseline)",
+                None: f"unknown ({tp.get('error')})"})[tp["active"]]
+    print(f"  Tenant Fabric policy set   : {tp_text}")
     if _throttle_count:
         print(f"  ⚠  API 429 throttles hit   : {_throttle_count}  (some workspaces may use member-scoped fallback data)")
     print(f"{'='*60}\n")

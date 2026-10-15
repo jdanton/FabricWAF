@@ -19,36 +19,57 @@ all capacity lifecycle operations (pause, resume, scale, delete).
 
 ---
 
-## 2. Workload Memory Allocation
-
-Workloads share the capacity's total memory. Allocating a maximum percentage per
-workload prevents a single workload from monopolising the capacity during a surge.
-
-The values below are the **maximum percentage of capacity memory** each workload
-may use. They are intentionally conservative — the actual ceiling can be raised
-in `configure_capacity.py` without changing this document's intent.
-
-| Workload | Max memory % | Rationale |
-|----------|-------------|-----------|
-| `SemanticModel` | 40 % | Core BI query workload; needs headroom but must not crowd out pipelines |
-| `Dataflow` | 40 % | ETL workload; burst-heavy but short-lived |
-| `PaginatedReport` | 20 % | Low baseline but can spike during scheduled runs |
-
-> **Note:** Percentages represent the ceiling, not a reservation. Unused
-> capacity is always available to other workloads. Total across all workloads
-> may exceed 100 % — Fabric enforces each workload's ceiling independently.
-
----
-
-## 3. Semantic Model Query Timeout
+## 2. Capacity-level Surge Protection
 
 | Setting | Required value | Why |
 |---------|---------------|-----|
-| `QueryTimeout` | 600 seconds | Prevents runaway DAX queries from consuming all available CUs. Long-running queries should be fixed in the model, not given unlimited runtime. |
+| Surge protection | Enabled | Rejects new **background** jobs (refreshes, pipelines, Spark) before the capacity falls into deep throttling. That keeps interactive users working and shortens recovery. |
+| Background rejection threshold | 75 % (starting point) | Tune from the Capacity Metrics app **Background rejection** chart: set it above typical peaks and below the level where interactive rejection starts. |
+| Background recovery threshold | 50 % (starting point) | Must be > 5 and below the rejection threshold. Set it near the typical background percentage. |
 
-Queries that exceed 600 s are cancelled and return an error to the client. If
-legitimate queries need longer, they should be broken into smaller operations or
-moved to a DirectLake model.
+`configure_capacity.py` enables surge protection with these defaults only when
+it's **disabled**. If it's already enabled, the per-capacity thresholds are
+treated as tuned and left alone. API: `GET/PATCH /v1/capacities/{id}/surgeProtection`
+(capacity admin).
+
+Surge protection doesn't block operations billed through on-demand Spark billing,
+or OneLake operations. To fully protect a mission-critical solution, put it on its own capacity.
+
+### Workspace-level surge protection (preview)
+
+Workspace-level surge protection caps how many CUs any single workspace can use over a rolling 24 hours. A workspace that hits the cap is set to **Blocked**. Configure it in **OneLake catalog → Govern → Capacities → Surge protection**. There is no public API yet, so it isn't automated here.
+
+| Setting | Recommendation |
+|---------|---------------|
+| Workspace consumption limit | Enable on shared/dev capacities; start at 20–30 % per workspace |
+| Production workspaces | Mark as **Mission critical** (exempt from the per-workspace cap) |
+| Block duration | Time-boxed (e.g. 4 h), not indefinite, so blocked teams recover without a ticket |
+
+---
+
+## 3. Capacity Overage (GA September 2026)
+
+Capacity overage pays off throttling debt automatically and bills it at **3× the
+pay-as-you-go rate** on a separate meter. It is **on by default for new
+capacities** with a 25 % threshold, so leaving it untouched is itself a cost decision.
+
+| Setting | Required value | Why |
+|---------|---------------|-----|
+| Overage | Enabled | Removes user-visible throttling during short spikes without a permanent SKU change. |
+| Rolling 24-hour threshold | **10 %** of the SKU's daily CU-hours; never above **⅓** | Above ⅓ of daily CU-hours, overage costs more than scaling up the SKU. The threshold is a *spending threshold, not a hard cap*: in-flight work keeps running after it's reached. |
+| Cost alert | Azure Cost Management budget on the **Capacity Overage Capacity Usage CU** meter | Overage cost appears only on the Azure bill. Alert on it, then right-size the SKU if it's recurring. |
+
+Example: an F64 has 1,536 daily CU-hours, which gives a target threshold of 153 CU-h and a ceiling of 512 CU-h.
+The threshold also consumes Fabric **quota** (threshold ÷ 24 CUs).
+
+`configure_capacity.py` sets the threshold when overage is disabled or above
+the ⅓ ceiling. API: `GET/PATCH /v1/capacities/{id}/overageConfiguration`.
+
+> **Terraform note:** `azurerm_fabric_capacity` (ARM API 2023-11-01) has no
+> overage argument. The ARM `properties.overage` block exists only in the
+> 2026-08-01-preview and 2026-09-01-preview API versions. Overage is therefore
+> managed through the Fabric REST API, not Terraform, until azurerm adopts a
+> stable API version.
 
 ---
 
@@ -56,10 +77,13 @@ moved to a DirectLake model.
 
 | Setting | Required value | Why |
 |---------|---------------|-----|
-| Overload notifications | Enabled | Alerts capacity admins by email when the capacity is throttled, allowing proactive scaling before users are impacted. |
+| Overload notifications | Enabled | Emails capacity admins when the capacity is throttled, so they can scale before users are affected. |
+| Surge-protection notifications | Enabled (Govern → Capacities) | Notifies when background rejection or a workspace block starts. |
 
-Notifications fire when the capacity is consistently at or above 100 % CU
-utilisation. They are sent to all members of the `Fabric-Capacity-Admins` group.
+Notifications go to all members of the `Fabric-Capacity-Admins` group. For
+event-driven alerting, subscribe to **Capacity Overview Events** (GA) in
+Real-Time hub, or use the capacity alert templates (GA September 2026). These
+replace polling the Metrics app.
 
 ---
 
@@ -74,24 +98,59 @@ Workspace assignment is a privileged operation. Limiting it to the
 
 ---
 
-## 6. Autoscale
+## 6. Capacity-scoped Fabric Policy (preview)
 
-Autoscale is supported on F64 and larger SKUs. For eligible capacities:
+Each capacity can have **one active capacity-scoped policy set**. Today it
+holds one policy: **Allow item creation**. Use it to allow-list which item types
+can be created on production capacities, and by whom.
 
-| Setting | Required value | Why |
+| Setting | Recommendation | Why |
 |---------|---------------|-----|
-| Autoscale | Enabled | Prevents hard throttling during legitimate demand spikes without requiring manual intervention. |
-| Max autoscale CUs | 25 % above base SKU | Bounds unexpected cost growth while providing burst headroom. |
+| Prod capacities | Activate a policy set (`ps_cap_{BU}_{Env}_{Purpose}`) that allows item creation only for the deployment identity and a platform group | Production content should arrive through deployment pipelines or Git, not be hand-built in the portal. |
+| Dev/test capacities | No policy set, or one that blocks only unapproved item types | Keeps developers productive. |
+| Item types in rules | Use **API identifiers** (`DataPipeline`, `Reflex`, `KQLDashboard`), not display names | The rule API rejects display names. |
 
-Autoscale is silently skipped on SKUs below F64 — the script checks the SKU
-before attempting to enable it.
+Activation needs a **capacity admin**. Rules take effect within 15 minutes.
+Power BI items aren't enforced yet. Fabric policies are **not supported on
+capacities in West US** (or West/North Europe), so prefer another US region for
+capacities that need them. Full guidance, including the REST API, is in
+[docs/governance-compliance.md](docs/governance-compliance.md#fabric-policies-preview).
+
+---
+
+## 7. Semantic Model Query Timeout
+
+| Setting | Recommended value | Why |
+|---------|---------------|-----|
+| Power BI workloads → Semantic models → Query timeout | 600 seconds | Stops runaway DAX queries from using up the capacity. Fix long-running queries in the model rather than giving them unlimited runtime. |
+
+Set this in the capacity's **Power BI workloads** settings. The Premium Gen1
+`/capacities/{id}/Workloads` API that this repo used to call has no effect on
+F SKUs, so this setting is applied manually and checked during capacity reviews.
+
+---
+
+## 8. On-demand Billing for Spark (formerly "Autoscale Billing for Spark")
+
+F SKUs don't support the Premium P-SKU "autoscale" (extra v-cores). The repo
+previously enabled that on F64+, but it had no effect on F SKUs. The F-SKU
+options for burst headroom are capacity overage (§3) and **on-demand billing
+for Spark**:
+
+| Setting | Recommendation | Why |
+|---------|---------------|-----|
+| On-demand billing for Spark | **Decide per capacity — not on by default** | Moves Spark jobs off the shared capacity onto pay-as-you-go serverless billing (0.5 CU-hour rate). There's no smoothing or bursting, and jobs are queued or throttled at the max CU you set. Good for capacities dominated by Spark batch work; adds variable cost. |
+
+Being able to run *all* workloads on demand, and the zero-provisioned F0 SKU, are
+announced but not available yet (October 2026).
 
 ---
 
 ## Applying the Configuration
 
-The `scripts/configure_capacity.py` script applies all settings above via the
-Power BI Admin API and the Fabric REST API. It runs automatically as the
+The `scripts/configure_capacity.py` script applies §1–§4 via the Power BI
+Admin API and the Fabric REST API. §5–§8 are set in the portal (Govern tab) or
+through the policy-set API and checked during capacity reviews. It runs automatically as the
 **Configure Capacity** job in the GitHub Actions deployment pipeline after a
 successful deploy.
 

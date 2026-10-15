@@ -212,3 +212,75 @@ One row per (capacity × item), interactive-vs-background CU split over `window_
 Derived measures (in the `Interactive_Workloads` model): `% Interactive =
 interactive_cu_s / total_cu_s`. A low value means an item is refresh-heavy rather than
 query-heavy — a different remediation than warehouse migration.
+
+### `report_activity_events` — daily partitions, `replaceWhere` per day
+One row per Power BI activity-log event (`/admin/activityevents`), filtered to
+`TRACKED_ACTIVITIES` (views + exports/prints). Partitioned by `activity_date`; only the
+days actually pulled are rewritten, so history accumulates past the API's ~30-day retention.
+
+| Column | Notes |
+|---|---|
+| `activity_date` | **partition key**, UTC date of the event |
+| `event_id` | the log's `Id`; the table is de-duplicated on it |
+| `creation_time` | event timestamp (UTC) |
+| `activity` | `ViewReport`, `ViewDashboard`, `ExportReport`, … |
+| `is_view` | `activity ∈ VIEW_ACTIVITIES` — the flag every view measure counts on |
+| `user_id` | **UPN/email of the caller** (stored as-is → personal data) |
+| `user_type` | log's `UserType` |
+| `item_id`, `item_name`, `item_kind` | coalesced across `Report*` / `Dashboard*` / `Artifact*` fields; `item_kind` ∈ Report / PaginatedReport / Dashboard |
+| `dataset_id`, `dataset_name` | model behind the report, when the event carries it |
+| `workspace_id`, `workspace_name`, `capacity_id`, `app_name` | |
+| `distribution_method`, `consumption_method` | how it was reached (app / shared / Power BI Web / Mobile / Embed) |
+| `client_ip`, `user_agent` | |
+| `is_success` | |
+| `run_timestamp` | |
+
+### `report_usage_daily` — report × day, current overwrite
+The frequency grain, built over **all** retained history (not just the rollup window).
+
+| Column | Notes |
+|---|---|
+| `report_id`, `report_name`, `workspace_name` | name/workspace = newest non-null seen |
+| `activity_date`, `day_of_week`, `is_weekend` | partitioned by `activity_date` |
+| `views`, `distinct_users`, `exports` | that day |
+| `first_view_utc`, `last_view_utc` | first/last view within the day |
+| `run_timestamp` | |
+
+### `gold_report_usage` — one row per report, current overwrite
+Usage **full-outer joined** to `gold_heavy_interactive_items`, so reports with CU but no
+views still appear. Rolls up `usage_window_days` (default 28).
+
+| Column | Notes |
+|---|---|
+| `report_id`, `report_name`, `report_type` | `report_type` = Report / PaginatedReport |
+| `workspace_id`, `workspace_name`, `dataset_id`, `dataset_name`, `capacity_name` | |
+| `view_count`, `distinct_users`, `export_count` | over the usage window (`usage_window_days`, default 28) |
+| `active_days`, `pct_days_active` | days with ≥1 view, and as a % of the window |
+| `views_per_day` | `view_count / usage_window_days` |
+| `views_per_active_day` | rate when actually used — high + low `active_days` = bursty |
+| `exec_cadence` | `Daily` / `Weekly` / `Monthly` / `Sporadic` / `One-off` / `Unused`, from `median_gap_days` (≤1.5 / ≤9 / ≤31) |
+| `avg_gap_days`, `median_gap_days`, `max_gap_days` | days between consecutive **active days** |
+| `is_bursty` | `max_gap ≥ 3 × median_gap` (and >2 active days) |
+| `peak_day`, `peak_day_views` | busiest single day |
+| `first_view_utc`, `last_view_utc`, `days_since_last_view` | |
+| `top_consumption_method` | most-used channel (Power BI Web / Mobile / Embed …) |
+| `views_cu_window`, `users_cu_window` | views/users restricted to the **CU** window (14d) |
+| `interactive_cu_s`, `total_cu_s`, `interactive_ops` | summed across capacities from the heavy mart |
+| `cu_s_per_view` | `interactive_cu_s / views_cu_window` — **both sides on the 14d window**; null when unviewed |
+| `is_unused_with_cu` | zero views in the CU window but CU > 0 → retirement candidate |
+| `usage_window_days`, `cu_window_days`, `run_timestamp` | the two windows differ (30 vs 14) — always read a rate alongside its window |
+
+### `gold_report_user_usage` — one row per report × user, current overwrite
+
+| Column | Notes |
+|---|---|
+| `report_id`, `report_name`, `workspace_id`, `workspace_name` | |
+| `user_id` | **UPN/email** |
+| `view_count`, `active_days`, `views_per_active_day` | |
+| `exec_cadence`, `avg_gap_days`, `median_gap_days`, `max_gap_days` | same cadence rules, per user |
+| `first_view_utc`, `last_view_utc`, `days_since_last_view` | |
+| `user_rank_in_report` | 1 = this report's heaviest user |
+| `pct_of_report_views` | this user's share; `rank = 1 AND pct ≥ 90` = single-consumer report |
+| `consumption_methods` | distinct channels this user used |
+| `last_consumption_method`, `last_distribution_method` | latest-wins (`max` over a `(creation_time, value)` struct) |
+| `usage_window_days`, `run_timestamp` | |

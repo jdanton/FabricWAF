@@ -1,0 +1,26 @@
+{
+  "displayName": "ps_tenant_baseline",
+  "description": "Tenant baseline: only the platform admin group can change workspace CMK and outbound networking settings.",
+  "scope": "Tenant",
+  "policies": {
+    "WorkspaceSettingsEditing": [
+      {
+        "displayName": "Platform admins edit CMK and outbound networking",
+        "description": "Workspace admins outside the platform group can no longer change encryption (CMK) or outbound networking. Every other workspace setting is unaffected.",
+        "conditions": [
+          {
+            "type": "Dynamic",
+            "targetProperty": "principal.groups.id",
+            "predicate": { "operator": "AnyOf", "values": ["${FABRIC_PLATFORM_ADMINS_GROUP_ID}"] }
+          },
+          {
+            "type": "Dynamic",
+            "targetProperty": "workspaceSettingsEditing.settingType",
+            "predicate": { "operator": "AnyOf", "values": ["Encryption", "OutboundNetworking"] }
+          }
+        ],
+        "effects": [{ "type": "Allow" }]
+      }
+    ]
+  }
+}

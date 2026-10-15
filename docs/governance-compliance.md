@@ -3,8 +3,11 @@
 Reference for the FabricWAF governance/compliance tooling (`scripts/`) and the
 production CI/CD pipeline (`.github/workflows/fabric-prod-deploy.yml`).
 
-Fabric has no built-in policy engine, so these Python scripts and the GitHub
-Actions gate enforce naming, security, capacity, and tenant-settings standards.
+Fabric policies (preview) now enforce a narrow set of rules natively: item
+creation, workspace-settings editing, and external data sharing (see
+[Fabric policies](#fabric-policies-preview)). Everything else (naming, workspace
+role hygiene, capacity configuration, tenant settings) is still enforced by these
+Python scripts and the GitHub Actions gate.
 Every script authenticates with `azure.identity.DefaultAzureCredential`, which
 transparently picks up the system/user-assigned managed identity on the
 `fabric-gh-runner` Azure VM — no secrets, tokens, or OIDC are stored.
@@ -17,7 +20,8 @@ transparently picks up the system/user-assigned managed identity on the
 | `assess_tenant_settings.py` | Risk-rated tenant-settings assessment + apply | Fabric Admin | Fabric |
 | `compare_tenant_settings.py` | Baseline-vs-live tenant-settings diff → CSV | Fabric Admin | Fabric |
 | `validate_fabric.py` | Naming/security validation of prod workspaces | Fabric | Fabric |
-| `configure_capacity.py` | Applies capacity best practices | Power BI Admin | Power BI |
+| `configure_capacity.py` | Applies capacity best practices (admins, surge protection, overage, notifications) | Power BI Admin, Fabric | Power BI, Fabric |
+| `apply_fabric_policies.py` | Deploys/activates a Fabric policy set from `policies/*.json` | Fabric (policy sets, preview) | Fabric |
 | `deploy_fabric.py` | Triggers + polls a Fabric Deployment Pipeline | Fabric | Fabric |
 | `list_workspaces.py` | Lists workspaces + assigned capacity | Power BI Admin | Power BI |
 
@@ -43,17 +47,23 @@ Admin-role members of each non-compliant workspace.
 | Check (`check`) | Object | Severity |
 |-----------------|--------|----------|
 | `capacity_region` — capacity not in an approved US region | Capacity | high |
-| `workspace_naming` — name ≠ `{BU}-{Function}-{Env}` | Workspace | medium |
+| `workspace_naming` — name ≠ `{BU}-{Function}-{Env}`, or contains a region code | Workspace | medium |
 | `workspace_admin_user` — `Admin` role held by an individual `User` | Workspace | critical |
 | `workspace_write_user` — `Member`/`Contributor` held by an individual `User` | Workspace | high |
-| `item_naming` — item name ≠ pattern for its type | Item | medium |
+| `item_naming` — item name ≠ pattern for its type, or contains a region code | Item | medium |
+
+The report also records the **active tenant-scope Fabric policy set**
+(`fabric_policies.tenant` in `audit-report.json`; needs Fabric administrator).
+While Fabric policies are in preview this is informational and isn't counted
+in `total_violations`.
 
 Approved US regions: `eastus`, `eastus2`, `westus`, `westus2`, `westus3`,
 `centralus`, `northcentralus`, `southcentralus`, `westcentralus`.
 
 Ownership checks only flag principals of type `User`; Entra groups and service
-principals are compliant at any role. Unknown item types are skipped rather than
-flagged. Naming patterns are the same set used by `validate_fabric.py` (see
+principals are compliant at any role. Item types with no pattern skip the pattern
+check but still get the region-code check: region short codes (`eus`, `wus2`, …)
+are allowed only in capacity names. Naming patterns are the same set used by `validate_fabric.py` (see
 [Naming patterns](#naming-patterns-validate_fabricpy--audit_fabricpy)).
 
 ### Authentication
@@ -307,6 +317,20 @@ Per-item-type regexes (`ITEM_PATTERNS`):
 | Reflex | `^rx_{BU}_*_*$` | `rx_{BU}_{Domain}_{Trigger}` |
 | Environment | `^env_{BU}_*_{Env}$` | `env_{BU}_{Purpose}_{Env}` |
 | Shortcut | `^sc_*_*$` | `sc_{SourceLakehouse}_{Domain}` |
+| PolicySet | `^ps_(?:tenant_*\|cap_{BU}_{Env}_*)$` | `ps_tenant_{Purpose}` / `ps_cap_{BU}_{Env}_{Purpose}` |
+| VariableLibrary | `^vl_{BU}_*$` | `vl_{BU}_{Domain}` |
+| CopyJob | `^cj_{BU}_*_to_{Layer}_{Freq}$` | `cj_{BU}_{Source}_to_{Layer}_{Freq}` |
+| SQLDatabase | `^sqldb_{BU}_*_{Env}$` | `sqldb_{BU}_{Function}_{Env}` |
+| MirroredDatabase | `^mir_{BU}_*_{Env}$` | `mir_{BU}_{Source}_{Env}` |
+| Eventhouse | `^eh_{BU}_*_{Env}$` | `eh_{BU}_{Domain}_{Env}` |
+| KQLDashboard | `^rtd_{BU}_*_*$` | `rtd_{BU}_{Domain}_{Audience}` |
+| UserDataFunction | `^udf_{BU}_*_*$` | `udf_{BU}_{Domain}_{Purpose}` |
+| DataAgent | `^da_{BU}_*_*$` | `da_{BU}_{Domain}_{Purpose}` |
+| ApacheAirflowJob | `^af_{BU}_*_*$` | `af_{BU}_{Function}_{Domain}` |
+| DataBuildToolJob | `^dbt_{BU}_*_{Layer}$` | `dbt_{BU}_{Domain}_{Layer}` |
+| GraphQLApi | `^gql_{BU}_*_{Env}$` | `gql_{BU}_{Domain}_{Env}` |
+
+No item pattern carries a region code; only capacity names (Azure Policy) do.
 
 `{BU}`/`{Env}`/`{Layer}`/`{Freq}` expand to the alternation groups above; `*`
 expands to `[a-z][a-z0-9_]*`. `audit_fabric.py` uses the identical set (non-capturing
@@ -314,30 +338,105 @@ expands to `[a-z][a-z0-9_]*`. `audit_fabric.py` uses the identical set (non-capt
 
 ---
 
+## Fabric policies (preview)
+
+[Fabric policies](https://learn.microsoft.com/en-us/fabric/governance/fabric-policies-overview)
+(preview, September 2026) are Fabric's first native policy engine. A **policy set** is a
+workspace item (`PolicySet`) with a fixed **Tenant** or **Capacity** scope. Only one
+set can be active per scope. Each policy is an **allow list**: if a policy has
+rules and none match, the action is blocked. Policies are free and use no CUs.
+
+| Policy (API name) | Scope | Conditions | Use in this repo |
+|-------------------|-------|-----------|------------------|
+| Allow item creation (`ItemCreation`) | Capacity | security group, workspace ID, item type (API identifier) | `ps_cap_{BU}_prod_itemcreation`: only the deployers/platform groups create items on prod capacities |
+| Allow workspace settings editing (`WorkspaceSettingsEditing`) | Tenant | security group, workspace ID, setting type (`Encryption`, `OutboundNetworking`) | `ps_tenant_baseline`: only platform admins change workspace CMK and outbound networking |
+| Allow external data sharing | Tenant | security group, workspace, sensitivity label, recipient email domain | Configure in the Policies center. **Not yet in the REST API**, so not in `policies/` |
+
+**What they can't do:** evaluate names, tags, or workspace role assignments;
+audit without enforcing (Allow is the only effect); or scope to a domain or
+workspace. Naming and role hygiene therefore stay with `audit_fabric.py` and
+`validate_fabric.py`.
+
+### Policy-as-code: `policies/` + `apply_fabric_policies.py`
+
+No Terraform provider (`azurerm`, `microsoft/fabric` v1.14) or `fabric-cicd`
+release supports policy sets, so definitions live as JSON in
+[`policies/`](../policies) and are deployed with the REST API:
+
+```bash
+export FABRIC_POLICY_WORKSPACE_ID=<ops-governance-prod workspace GUID>
+export FABRIC_PLATFORM_ADMINS_GROUP_ID=<group object ID>
+export FABRIC_PROD_DEPLOYERS_GROUP_ID=<group object ID>   # include id-fabric-gh-runner
+
+python scripts/apply_fabric_policies.py policies/ps_tenant_baseline.json            # dry run
+python scripts/apply_fabric_policies.py policies/ps_tenant_baseline.json --apply    # create/update rules
+python scripts/apply_fabric_policies.py policies/ps_cap_fin_prod_itemcreation.json \
+    --apply --activate --capacity-id <capacity GUID>                                   # + activate
+```
+
+The script substitutes `${VAR}` placeholders from the environment and validates
+locally. It checks the naming pattern, the policy-to-scope match, rule and value
+limits, API item-type identifiers, and rejects `workspace.name` conditions. It
+then finds or creates the set and calls `replaceByPolicy?beta=true` for each
+policy in the file. Activation is a separate `--activate` flag; pass
+`--replace-active` to replace a different set that's already active.
+
+### Operating rules
+
+- **Enable the `Policies (preview)` tenant setting**, scoped to the platform
+  admin group and the automation identity.
+- **Store all sets in one secured governance workspace** (`ops-governance-prod`).
+  Its capacity must **not** be in West US, West Europe, or North Europe, where
+  policies aren't supported. Avoid inbound Private Link on it: the Govern tab's
+  Policies center doesn't work with Private Link.
+- **Activation is privileged and not Git-driven.** Git can't activate a set.
+  Tenant activation needs a Fabric administrator (`POST /v1/admin/workspaces/{ws}/policySets/{id}/activate`,
+  10 requests/minute). Capacity activation needs a capacity admin
+  (`POST /v1/workspaces/{ws}/policySets/{id}/activate` with `capacityId`).
+- **Test before you activate.** Adding one narrow rule immediately blocks
+  everything else under that policy. Use test users inside and outside the
+  allowed groups, wait up to 15 minutes, and check the Fabric audit log, which
+  records every allow/block decision.
+- **Item-creation rules use group membership.** Service principals and managed
+  identities (such as `id-fabric-gh-runner`) must be in an allowed group, or
+  deployments into a prod capacity will fail.
+- **Power BI items aren't enforced yet** by the item-creation policy (preview).
+- **Precedence:** a tenant setting that disables a feature still wins. A policy
+  can only narrow what tenant settings already allow.
+
+---
+
 ## `configure_capacity.py` — apply capacity best practices
 
-Applies [`capacity-best-practices.md`](../capacity-best-practices.md) to a Fabric
-capacity via the **Power BI Admin REST API** (`api.powerbi.com/v1.0/myorg`).
-Idempotent — only settings that differ from target are patched.
+Applies [`capacity-best-practices.md`](../capacity-best-practices.md) §1–§4 to
+a Fabric capacity through the **Power BI Admin REST API** (`api.powerbi.com/v1.0/myorg`)
+and the **Fabric REST API** (`api.fabric.microsoft.com/v1`). It's idempotent:
+only settings that differ from the target are patched.
 
 ### What it sets (`[n/4]` steps)
 
-| Step | Setting | Target |
-|------|---------|--------|
-| 1 | Administration members | Exactly the `Fabric-Capacity-Admins` group (`FABRIC_ADMINS_GROUP`) |
-| 2 | Workload memory / timeout | SemanticModel 40% mem + 600 s query timeout; Dataflow 40%; PaginatedReport 20% (each `Enabled`) |
-| 3 | Overload notifications | Enabled |
-| 4 | Autoscale | Enabled for F64+ SKUs, `maxCapacityUnits` = base CUs × 1.25; skipped below F64 |
+| Step | Setting | Target | API |
+|------|---------|--------|-----|
+| 1 | Administration members | Exactly the `Fabric-Capacity-Admins` group (`FABRIC_ADMINS_GROUP`) | Power BI |
+| 2 | Capacity-level surge protection | Enabled. If disabled, it's set to 75 % reject / 50 % recover; an existing enabled configuration is left as tuned. | `PATCH /v1/capacities/{id}/surgeProtection` |
+| 3 | Capacity overage | Enabled with a 24-h threshold of 10 % of daily CU-hours. It's reset if disabled or above ⅓ of daily CU-hours. | `PATCH /v1/capacities/{id}/overageConfiguration` |
+| 4 | Overload notifications | Enabled | Power BI |
 
-Workloads not available on the SKU are silently skipped. SKU→CU map covers
-`F2`…`F2048`; autoscale minimum is 64 CUs (F64).
+The SKU→CU map covers `F2`…`F8192`.
+
+**Removed in October 2026:** the Premium Gen1 workload memory/timeout step and
+the "autoscale on F64+" step. Neither applies to F SKUs: the `/Workloads` API is
+Gen1-only, and autoscale is a P-SKU feature. The semantic-model query timeout is
+now set manually (best practices §7).
 
 ### Authentication
 
-`DefaultAzureCredential`, **Power BI scope**
-(`analysis.windows.net/powerbi/api/.default`). Identity needs the **Fabric
-Capacity Administrator** role (provisioned by `terraform/policy.tf`) at the
-subscription scope.
+`DefaultAzureCredential` with **both** the Power BI scope
+(`analysis.windows.net/powerbi/api/.default`) and the Fabric scope. The surge
+protection and overage APIs need the identity to be a **capacity admin**, so add
+the runner identity to `Fabric-Capacity-Admins`. The Azure **Fabric Capacity
+Administrator** RBAC role (provisioned by `terraform/policy.tf`) isn't enough on
+its own.
 
 ### CLI / environment
 
@@ -528,8 +627,9 @@ into `post-deploy-validation-report.json`.
 ### Job 3 — `configure-capacity`
 
 `needs: deploy`, also `environment: production`. Runs
-`scripts/configure_capacity.py` to apply capacity best practices via the Power BI
-Admin API. Idempotent, so safe to re-run.
+`scripts/configure_capacity.py` to apply capacity best practices (admins, surge
+protection, overage, notifications) via the Power BI Admin and Fabric REST APIs.
+It's idempotent, so it's safe to re-run.
 
 ### Auth model — managed identity, no secrets
 

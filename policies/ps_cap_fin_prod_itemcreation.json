@@ -1,0 +1,24 @@
+{
+  "displayName": "ps_cap_fin_prod_itemcreation",
+  "description": "Finance prod capacities: only the deployment identities and platform group create items. Content reaches prod through deployment pipelines or Git, not the portal.",
+  "scope": "Capacity",
+  "policies": {
+    "ItemCreation": [
+      {
+        "displayName": "Deployers and platform admins create any item",
+        "description": "Members of the prod deployers group (includes the fabric-gh-runner managed identity) can create any item type in any workspace on the capacity.",
+        "conditions": [
+          {
+            "type": "Dynamic",
+            "targetProperty": "principal.groups.id",
+            "predicate": {
+              "operator": "AnyOf",
+              "values": ["${FABRIC_PROD_DEPLOYERS_GROUP_ID}", "${FABRIC_PLATFORM_ADMINS_GROUP_ID}"]
+            }
+          }
+        ],
+        "effects": [{ "type": "Allow" }]
+      }
+    ]
+  }
+}

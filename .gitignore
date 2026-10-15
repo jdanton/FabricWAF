@@ -26,3 +26,11 @@ tenant-settings-report.json
 audit-report.json
 ID-Fabric.md
 scripts/schema.txt
+license-report.json
+license_*.csv
+assign_plan.csv
+graph_nodes.csv
+graph_edges.csv
+
+# Graph analysis exports (private — real names/emails)
+exports/

@@ -46,9 +46,9 @@ There are no custom workspace roles. You cannot create a role like "Pipeline Ope
 
 Each Azure data service has its own mature data security model — SQL Server has database roles, RLS, dynamic data masking. ADLS Gen2 has POSIX ACLs at the folder/file level. Cosmos DB has resource tokens. These are all GA and battle-tested.
 
-### Fabric: OneLake Security (Preview)
+### Fabric: OneLake Security (GA May 2026)
 
-OneLake security is the new unified data access control layer. It's promising but still in preview with significant limitations:
+OneLake security is the unified data access control layer. It became **generally available in May 2026**. Enforcement through the SQL analytics endpoint (nested groups, shortcuts, CLS, service principals) went GA in August 2026, and cross-workspace role management in the OneLake catalog is in preview. It's also now supported in workspaces with workspace-level private links. The architectural limits below remain. Rows marked † predate GA, so re-check them against the current [OneLake security limitations](https://learn.microsoft.com/en-us/fabric/onelake/security/data-access-control-model) before quoting them:
 
 **What it can do:**
 - Define roles that grant access to specific tables or folders within a lakehouse
@@ -65,10 +65,10 @@ OneLake security is the new unified data access control layer. It's promising bu
 | RLS rules can't use JOINs to other tables | Can't do things like "show only rows where region = user's region" by joining to a user-region mapping table |
 | RLS predicates max out at 1,000 characters | Complex multi-condition rules may not fit |
 | Admin/Member/Contributor roles bypass OneLake security entirely | Anyone with write access to the workspace sees all data regardless of RLS/CLS — the security only constrains Viewers |
-| RLS enforcement is engine-dependent | Supported in Spark notebooks and SQL analytics endpoint, but not all Fabric engines enforce it — potential data exposure through unsupported paths |
-| CLS + RLS can't span multiple roles | If one role has RLS and another has CLS on the same table, queries fail. Both must be in a single role. |
-| Distribution lists can't be resolved by the SQL endpoint | Users in distribution lists appear to have no role membership when accessing via SQL |
-| Cross-region shortcuts don't work with OneLake security | Accessing shortcutted data across capacity regions returns 404 errors |
+| RLS enforcement is engine-dependent † | Supported in Spark notebooks and SQL analytics endpoint, but not all Fabric engines enforce it — potential data exposure through unsupported paths |
+| CLS + RLS can't span multiple roles † | If one role has RLS and another has CLS on the same table, queries fail. Both must be in a single role. |
+| Distribution lists can't be resolved by the SQL endpoint † | Users in distribution lists appear to have no role membership when accessing via SQL |
+| Cross-region shortcuts don't work with OneLake security † | Accessing shortcutted data across capacity regions returns 404 errors |
 
 **The gap:** In Azure, you can set a POSIX ACL on a specific folder in ADLS Gen2 that says "this security group can read, but not write, and this applies to all current and future child files." In Fabric, the closest equivalent is OneLake security roles — but they bypass for anyone with Contributor or above, and they don't support dynamic user-attribute-based filtering that many enterprises rely on.
 
@@ -93,7 +93,7 @@ OneLake security is the new unified data access control layer. It's promising bu
 |-----------|-------|--------|
 | Activity logs | Azure Activity Log captures every RBAC change with full context | Fabric audit logs capture workspace role changes, but with less granularity |
 | Access reviews | Azure AD Access Reviews — scheduled, automated review of who has what | No built-in access review. Manual process only. |
-| Compliance policies | Azure Policy can audit/deny non-compliant role assignments | No policy engine. Can't automatically flag or prevent over-permissioned roles. |
+| Compliance policies | Azure Policy can audit/deny non-compliant role assignments | Fabric policies (preview) can allow-list item creation, workspace-settings edits, and external data sharing by security group, but they have no role-assignment condition. Fabric can't automatically flag or prevent over-permissioned roles. |
 | Role assignment alerts | Azure Monitor can alert on sensitive role changes | Must build custom alerting via Fabric REST API + external tooling |
 
 **The gap:** Azure Access Reviews let you say "every quarter, each workspace owner must review and re-confirm all Contributor+ assignments or they expire." Fabric has nothing like this. Over-permissioning tends to accumulate silently.
@@ -118,7 +118,7 @@ OneLake security is the new unified data access control layer. It's promising bu
 3. **Contributor+ bypasses data security** — OneLake RLS/CLS only constrains Viewers
 4. **OneLake security gaps** — RLS is static, limited to Delta tables, engine-dependent
 5. **No deny assignments** — can't explicitly block access granted by a group
-6. **No policy enforcement** — can't auto-audit or prevent over-permissioned workspaces
+6. **Narrow policy enforcement** — Fabric policies (preview) govern item creation, workspace settings, and external sharing only. They can't auto-audit or prevent over-permissioned workspaces
 7. **No built-in access reviews** — permission sprawl is invisible without custom tooling
 8. **No ABAC or PIM** — no attribute-based conditions, no just-in-time elevation
 9. **No dynamic RLS** — can't resolve user attributes at query time for row filtering
@@ -135,5 +135,6 @@ Since you can't fix these with configuration alone, your governance model needs 
 - **Least privilege by default**: Default to Viewer; elevate to Contributor only for specific needs with documented justification
 - **Automated audits**: Use the Fabric Admin REST API to scan workspace memberships on a schedule and flag Contributor+ sprawl
 - **Separate prod from dev**: Never give developers Contributor on production workspaces — use deployment pipelines to promote content instead
-- **Document everything**: Since there's no policy engine to encode your rules, write them down and socialize them relentlessly
+- **Use Fabric policies where they apply**: allow-list item creation on production capacities, lock workspace networking/CMK settings to a platform group, and restrict external data sharing to approved domains (see [docs/governance-compliance.md](docs/governance-compliance.md#fabric-policies-preview))
+- **Document everything**: Fabric policies can't express most access rules, so write them down and socialize them relentlessly
 

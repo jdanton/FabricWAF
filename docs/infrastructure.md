@@ -249,7 +249,7 @@ PATCH https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/roleAssignmen
 
 ## 6. Naming standard
 
-Full detail in [`naming-standard.md`](../naming-standard.md). The core convention is `{BU}-{Function}-{Env}-{Region}`, applied consistently across all Fabric resources. Fabric has no built-in policy engine, so naming is enforced by discipline, automation, and (for capacities) the Azure Policy above.
+Full detail in [`naming-standard.md`](../naming-standard.md). The core tokens `{BU}-{Function}-{Env}` apply to every resource. `{Region}` is added **only to capacity names**, because the capacity is the only region-pinned resource. Workspaces and items inherit the region from their capacity and can be reassigned without a rename. Capacity names are enforced by the Azure Policy above. Fabric policies (preview) govern item creation, workspace settings and external sharing, but they have no name condition, so workspace and item names are enforced by `audit_fabric.py`, `validate_fabric.py` and the CI/CD gate.
 
 **Convention tokens:**
 
@@ -258,7 +258,7 @@ Full detail in [`naming-standard.md`](../naming-standard.md). The core conventio
 | `{BU}` | Business unit | `fin`, `mktg`, `hr`, `eng`, `sales`, `ops` |
 | `{Function}` | Workload purpose | `dw`, `analytics`, `ingest`, `ml`, `report` |
 | `{Env}` | Environment tier | `dev`, `tst`, `stg`, `prod` |
-| `{Region}` | Azure region short code | `eus`, `eus2`, `wus`, `wus2`, `wus3`, `cus`, `ncus`, `scus`, `wcus` |
+| `{Region}` | Azure region short code — **capacity only** | `eus`, `eus2`, `wus`, `wus2`, `wus3`, `cus`, `ncus`, `scus`, `wcus` |
 | `{Layer}` | Medallion layer | `raw`, `bronze`, `silver`, `gold` |
 | `{Source}` / `{Domain}` / `{Freq}` | Source system / data domain / schedule | `sap`, `crm` / `customers`, `orders` / `daily`, `hourly` |
 
@@ -301,10 +301,20 @@ Full detail in [`capacity-best-practices.md`](../capacity-best-practices.md). Th
 | Area | Target state |
 |------|--------------|
 | Administration | Exactly one `administrationMembers` entry — the `Fabric-Capacity-Admins` group object ID (mirrors Policy 3); no individual users |
-| Workload memory | Max memory %: `SemanticModel` 40%, `Dataflow` 40%, `PaginatedReport` 20% (ceilings, not reservations; enforced per workload) |
-| Semantic model query timeout | `QueryTimeout` = 600 s; over-limit queries are cancelled |
+| Surge protection (capacity) | Enabled; 75 % reject / 50 % recover starting point, tuned per capacity (`/v1/capacities/{id}/surgeProtection`) |
+| Surge protection (workspace, preview) | Prod workspaces marked **Mission critical**; per-workspace cap on shared/dev capacities (portal only) |
+| Capacity overage (GA Sep 2026) | Enabled with a 24-h threshold of 10 % of daily CU-hours, never above ⅓ (`/v1/capacities/{id}/overageConfiguration`); cost alert on the overage meter |
 | Overload notifications | Enabled; emails all `Fabric-Capacity-Admins` members when the capacity is throttled (sustained ≥100% CU) |
 | Workspace assignment | `SpecificUsersAndGroups` — `Fabric-Capacity-Admins` only |
-| Autoscale | Enabled on F64+ (silently skipped below F64); max autoscale CUs 25% above base SKU |
+| Capacity Fabric policy (preview) | Prod capacities run an active `ps_cap_{BU}_prod_itemcreation` set (see `policies/`) |
+| Semantic model query timeout | 600 s, set manually in Power BI workload settings (the Gen1 workloads API doesn't apply to F SKUs) |
+| On-demand billing for Spark | Per-capacity opt-in decision (formerly "Autoscale Billing for Spark"). The old P-SKU "autoscale on F64+" target was removed because it has no effect on F SKUs |
+
+> **Terraform gaps (October 2026):** `azurerm_fabric_capacity` still targets ARM
+> API 2023-11-01. It has no overage or surge-protection arguments, and its SKU
+> list may not accept the new F4096/F8192 SKUs, so `variables.tf` still stops at
+> F2048. Those runtime settings are applied by `configure_capacity.py` through
+> the Fabric REST API. Fabric policy sets aren't supported by any Terraform
+> provider; they're deployed from `policies/` with `apply_fabric_policies.py`.
 
 Deviations require a PR that updates both `capacity-best-practices.md` and the matching constant in `scripts/configure_capacity.py`, approved by a `Fabric-Capacity-Admins` member. Ad-hoc portal changes are overwritten on the next deployment run.

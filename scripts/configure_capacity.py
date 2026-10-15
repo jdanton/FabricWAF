@@ -2,19 +2,29 @@
 configure_capacity.py
 
 Applies the configuration best practices defined in capacity-best-practices.md
-to a Microsoft Fabric capacity via the Power BI Admin REST API.
+to a Microsoft Fabric (F SKU) capacity.
 
 Settings applied:
-  - Workload memory limits  (SemanticModel 40%, Dataflow 40%, PaginatedReport 20%)
-  - SemanticModel query timeout  (600 s)
-  - Capacity overload notifications  (enabled)
-  - Workspace assignment permissions  (Fabric-Capacity-Admins group only)
-  - Autoscale  (enabled for F64+ SKUs, skipped otherwise)
+  - Administration members       (Fabric-Capacity-Admins group only)       Power BI API
+  - Capacity-level surge protection  (enabled; 75% reject / 50% recover)  Fabric REST API
+  - Capacity overage threshold   (enabled, <= 1/3 of daily CU-hours)       Fabric REST API
+  - Capacity overload notifications  (enabled)                            Power BI API
+
+Removed in October 2026 (no effect on F SKUs):
+  - Per-workload memory % / query timeout via the Premium Gen1 workloads API
+  - "Autoscale for F64+" -- a Premium P-SKU feature. Burst headroom on F SKUs
+    now comes from capacity overage (above) and on-demand billing for Spark
+    (an opt-in, per-capacity decision -- see capacity-best-practices.md).
+
+Existing surge-protection and overage settings that are already within policy
+are left alone, so per-capacity tuning done in the Capacity Metrics app is
+not overwritten.
 
 Authentication:
-  Uses DefaultAzureCredential — picks up the managed identity on fabric-gh-runner
-  automatically. The identity needs the Fabric Capacity Administrator role
-  (provisioned by terraform/policy.tf) at the subscription scope.
+  Uses DefaultAzureCredential, which picks up the managed identity on
+  fabric-gh-runner automatically. The surge-protection and overage APIs need
+  the identity to be a **capacity admin** (a member of Fabric-Capacity-Admins).
+  Azure RBAC alone isn't enough.
 
 Environment variables:
   FABRIC_CAPACITY_ID   GUID of the Fabric capacity to configure (required)
@@ -26,6 +36,7 @@ Exit codes:
 """
 
 import argparse
+import json
 import os
 import sys
 
@@ -37,33 +48,29 @@ from azure.identity import DefaultAzureCredential
 # ---------------------------------------------------------------------------
 
 POWERBI_API = "https://api.powerbi.com/v1.0/myorg"
+FABRIC_API = "https://api.fabric.microsoft.com/v1"
 
 CAPACITY_ID = os.environ.get("FABRIC_CAPACITY_ID", "")
 ADMINS_GROUP_OID = os.environ.get("FABRIC_ADMINS_GROUP", "")
 
-# Best-practice target values — mirrors capacity-best-practices.md
-WORKLOAD_TARGETS = {
-    "SemanticModel": {
-        "state": "Enabled",
-        "maxMemoryPercentageSetByUser": 40,
-        "queryTimeout": 600,          # seconds; Power BI field name
-    },
-    "Dataflow": {
-        "state": "Enabled",
-        "maxMemoryPercentageSetByUser": 40,
-    },
-    "PaginatedReport": {
-        "state": "Enabled",
-        "maxMemoryPercentageSetByUser": 20,
-    },
-}
+# Best-practice target values -- mirrors capacity-best-practices.md
 
-# SKU CU counts for autoscale eligibility (F64 = 64 CUs minimum)
-_AUTOSCALE_MIN_CUS = 64
+# Capacity-level surge protection (24-hour background %). Starting points only;
+# tune per capacity from the Metrics app "Background rejection" chart. Any
+# enabled configuration is accepted as compliant so tuning isn't overwritten.
+SURGE_REJECTION_THRESHOLD = 75   # valid 15-100
+SURGE_RECOVERY_THRESHOLD = 50    # must be > 5 and < rejection threshold
+
+# Capacity overage is billed at 3x PAYG. Microsoft's guidance is to keep the
+# rolling 24-hour threshold below 1/3 of the SKU's daily CU-hours (the
+# break-even with scaling up). We target 10% and flag anything above 1/3.
+OVERAGE_TARGET_FRACTION = 0.10
+OVERAGE_MAX_FRACTION = 1 / 3
+
 _SKU_CUS = {
     "F2": 2, "F4": 4, "F8": 8, "F16": 16, "F32": 32,
     "F64": 64, "F128": 128, "F256": 256, "F512": 512,
-    "F1024": 1024, "F2048": 2048,
+    "F1024": 1024, "F2048": 2048, "F4096": 4096, "F8192": 8192,
 }
 
 # ---------------------------------------------------------------------------
@@ -78,12 +85,21 @@ def _powerbi_headers() -> dict:
     return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
+def _fabric_headers() -> dict:
+    token = _credential.get_token("https://api.fabric.microsoft.com/.default").token
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _headers_for(url: str) -> dict:
+    return _fabric_headers() if url.startswith(FABRIC_API) else _powerbi_headers()
+
+
 def _get(url: str) -> dict:
-    resp = requests.get(url, headers=_powerbi_headers(), timeout=30)
+    resp = requests.get(url, headers=_headers_for(url), timeout=30)
     resp.raise_for_status()
     return resp.json()
 
@@ -91,11 +107,10 @@ def _get(url: str) -> dict:
 def _patch(url: str, payload: dict, dry_run: bool) -> bool:
     """PATCH and return True on success. Prints what would be sent in dry-run mode."""
     if dry_run:
-        import json
         print(f"  [dry-run] PATCH {url}")
         print(f"  [dry-run] body: {json.dumps(payload, indent=4)}")
         return True
-    resp = requests.patch(url, headers=_powerbi_headers(), json=payload, timeout=30)
+    resp = requests.patch(url, headers=_headers_for(url), json=payload, timeout=30)
     if resp.ok:
         return True
     print(f"  ERROR {resp.status_code}: {resp.text}")
@@ -141,56 +156,84 @@ def configure_admins(capacity: dict, admins_group_oid: str, dry_run: bool) -> bo
     return ok
 
 
-def configure_workloads(capacity_id: str, dry_run: bool) -> bool:
+def _sku_name(capacity: dict) -> str:
+    """The Power BI API returns sku as a string ("F64"); tolerate the {name: ...} shape too."""
+    sku = capacity.get("sku", "")
+    return sku.get("name", "") if isinstance(sku, dict) else sku
+
+
+def configure_surge_protection(capacity_id: str, dry_run: bool) -> bool:
     """
-    Apply memory and timeout settings to each supported workload.
-    Workloads not supported by the capacity SKU are silently skipped.
+    Enable capacity-level surge protection if it is disabled.
+    An already-enabled configuration is treated as tuned and left alone.
     """
-    print("\n[2/4] Workload memory and timeout settings")
-    data = _get(f"{POWERBI_API}/capacities/{capacity_id}/workloads")
-    available = {w["name"]: w for w in data.get("value", [])}
-    all_ok = True
+    print("\n[2/4] Capacity-level surge protection")
+    url = f"{FABRIC_API}/capacities/{capacity_id}/surgeProtection"
+    try:
+        current = _get(url)
+    except requests.HTTPError as exc:
+        print(f"  ERROR reading surge protection: {exc}")
+        return False
 
-    for workload_name, targets in WORKLOAD_TARGETS.items():
-        if workload_name not in available:
-            print(f"  SKIP {workload_name} — not available on this SKU")
-            continue
+    if current.get("state") == "Enabled":
+        print(f"  OK — enabled (reject {current.get('rejectionThreshold')}%, "
+              f"recover {current.get('recoveryThreshold')}%)")
+        return True
 
-        current = available[workload_name]
-        patch_body = {}
+    body = {
+        "state": "Enabled",
+        "rejectionThreshold": SURGE_REJECTION_THRESHOLD,
+        "recoveryThreshold": SURGE_RECOVERY_THRESHOLD,
+    }
+    print(f"  Enabling: reject {SURGE_REJECTION_THRESHOLD}%, recover {SURGE_RECOVERY_THRESHOLD}%")
+    ok = _patch(url, body, dry_run)
+    if ok and not dry_run:
+        print("  Applied.")
+    return ok
 
-        if current.get("state") != targets["state"]:
-            patch_body["state"] = targets["state"]
 
-        mem_key = "maxMemoryPercentageSetByUser"
-        if current.get(mem_key) != targets.get(mem_key):
-            patch_body[mem_key] = targets[mem_key]
+def configure_overage(capacity_id: str, sku: str, dry_run: bool) -> bool:
+    """
+    Make sure capacity overage is enabled with an explicit threshold below the
+    1/3-of-daily-CU-hours break-even. Overage is on by default (25%) for new
+    capacities, so leaving it untouched is itself a cost decision.
+    """
+    print("\n[3/4] Capacity overage")
+    base_cus = _SKU_CUS.get(sku)
+    if base_cus is None:
+        print(f"  SKIP — unknown SKU '{sku}'; set the overage threshold manually")
+        return True
 
-        if workload_name == "SemanticModel":
-            qt_key = "queryTimeout"
-            if current.get(qt_key) != targets.get(qt_key):
-                patch_body[qt_key] = targets[qt_key]
+    daily_cu_hours = base_cus * 24
+    target = max(1, int(daily_cu_hours * OVERAGE_TARGET_FRACTION))
+    ceiling = int(daily_cu_hours * OVERAGE_MAX_FRACTION)
 
-        if not patch_body:
-            print(f"  OK {workload_name} — already at target values")
-            continue
+    url = f"{FABRIC_API}/capacities/{capacity_id}/overageConfiguration"
+    try:
+        current = _get(url)
+    except requests.HTTPError as exc:
+        print(f"  ERROR reading overage configuration: {exc}")
+        return False
 
-        print(f"  Patching {workload_name}: {patch_body}")
-        ok = _patch(
-            f"{POWERBI_API}/capacities/{capacity_id}/workloads/{workload_name}",
-            patch_body,
-            dry_run,
-        )
-        if ok and not dry_run:
-            print(f"  Applied {workload_name}.")
-        all_ok = all_ok and ok
+    state = current.get("state")
+    threshold = current.get("thresholdCapacityUnitHours", 0)
+    if state == "Enabled" and 0 < threshold <= ceiling:
+        print(f"  OK — enabled, threshold {threshold} CU-h/24h (ceiling {ceiling})")
+        return True
 
-    return all_ok
+    reason = ("disabled" if state != "Enabled"
+              else f"threshold {threshold} CU-h exceeds 1/3 of daily CU-hours ({ceiling})")
+    print(f"  {reason} — setting threshold to {target} CU-h/24h "
+          f"({int(OVERAGE_TARGET_FRACTION * 100)}% of {daily_cu_hours} daily CU-h for {sku})")
+    ok = _patch(url, {"state": "Enabled", "thresholdCapacityUnitHours": target}, dry_run)
+    if ok and not dry_run:
+        print("  Applied.")
+    return ok
 
 
 def configure_notifications(capacity_id: str, dry_run: bool) -> bool:
     """Enable overload notifications on the capacity."""
-    print("\n[3/4] Overload notifications")
+    print("\n[4/4] Overload notifications")
     cap = _get(f"{POWERBI_API}/capacities/{capacity_id}")
     notif = cap.get("notificationSettings", {})
 
@@ -202,46 +245,6 @@ def configure_notifications(capacity_id: str, dry_run: bool) -> bool:
     ok = _patch(
         f"{POWERBI_API}/capacities/{capacity_id}",
         {"notificationSettings": {"overloadNotificationsEnabled": True}},
-        dry_run,
-    )
-    if ok and not dry_run:
-        print("  Applied.")
-    return ok
-
-
-def configure_autoscale(capacity: dict, dry_run: bool) -> bool:
-    """
-    Enable autoscale on F64+ capacities.
-    Sets max autoscale to 25% above the base SKU CU count.
-    Silently skips ineligible SKUs.
-    """
-    print("\n[4/4] Autoscale")
-    sku = capacity.get("sku", {}).get("name", "")
-    base_cus = _SKU_CUS.get(sku, 0)
-
-    if base_cus < _AUTOSCALE_MIN_CUS:
-        print(f"  SKIP — autoscale requires F64+, this capacity is {sku} ({base_cus} CUs)")
-        return True
-
-    max_cus = int(base_cus * 1.25)
-    autoscale = capacity.get("capacityUserSettings", {}).get("autoscaleSettings", {})
-
-    if (
-        autoscale.get("enabled") is True
-        and autoscale.get("maxCapacityUnits") == max_cus
-    ):
-        print(f"  OK — autoscale already enabled, max {max_cus} CUs")
-        return True
-
-    print(f"  Enabling autoscale: max {max_cus} CUs ({sku} base {base_cus} + 25%)")
-    ok = _patch(
-        f"{POWERBI_API}/capacities/{capacity['id']}",
-        {"capacityUserSettings": {
-            "autoscaleSettings": {
-                "enabled": True,
-                "maxCapacityUnits": max_cus,
-            }
-        }},
         dry_run,
     )
     if ok and not dry_run:
@@ -271,15 +274,15 @@ def main(dry_run: bool = False) -> int:
         print(f"ERROR: {exc}")
         return 1
 
-    sku = capacity.get("sku", {}).get("name", "unknown")
+    sku = _sku_name(capacity) or "unknown"
     print(f"  Capacity : {capacity.get('displayName', CAPACITY_ID)}")
     print(f"  SKU      : {sku}")
 
     results = [
         configure_admins(capacity, ADMINS_GROUP_OID, dry_run),
-        configure_workloads(CAPACITY_ID, dry_run),
+        configure_surge_protection(CAPACITY_ID, dry_run),
+        configure_overage(CAPACITY_ID, sku, dry_run),
         configure_notifications(CAPACITY_ID, dry_run),
-        configure_autoscale(capacity, dry_run),
     ]
 
     all_ok = all(results)

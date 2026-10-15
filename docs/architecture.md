@@ -5,7 +5,9 @@ It has three pillars, each independently useful:
 
 1. **Provisioning & policy (IaC)** — Terraform provisions Fabric capacities under
    Azure Policy + custom RBAC so capacities can only be created in approved regions,
-   with compliant names, and with a locked admin group.
+   with compliant names, and with a locked admin group. Inside Fabric, **Fabric
+   policy sets** (preview) from `policies/` allow-list item creation on prod
+   capacities and lock workspace CMK/outbound-networking edits to platform admins.
 2. **Compliance & CI/CD** — Python tooling audits the whole tenant (naming, security,
    tenant settings, region), and a GitHub Actions gate validates prod workspaces before
    a Fabric Deployment Pipeline promotes content.
@@ -23,12 +25,14 @@ flowchart TB
     subgraph CI["CI/CD (GitHub Actions)"]
         VAL[validate_fabric.py<br/>naming + security gate]
         DEP[deploy_fabric.py<br/>Deployment Pipeline]
-        CAP[configure_capacity.py]
+        CAP[configure_capacity.py<br/>surge protection · overage]
+        FPOL[apply_fabric_policies.py<br/>policies/*.json]
     end
     subgraph Tenant["Microsoft Fabric tenant"]
         WS[(Workspaces / items)]
         GW[(Gateways / connections)]
         CM[(Capacity Metrics app model)]
+        PS[Fabric policy sets<br/>tenant + capacity scope]
     end
     subgraph LH["lh_fabric_management lakehouse (fabricmanagement schema)"]
         INV[Inventory tables<br/>gateways · connections · SCD2 + snapshots]
@@ -39,6 +43,8 @@ flowchart TB
     TF --> POL
     TF --> MI
     MI --> VAL --> DEP --> CAP --> Tenant
+    MI --> FPOL --> PS
+    PS -. allow-list .-> WS
     Tenant --> WS
     WS -->|admin REST + scanner API| INV
     GW -->|/v2.0 gatewayclusters + /v1 connections| INV
@@ -53,6 +59,13 @@ definitions bundled into a governance initiative, a custom `Fabric Capacity
 Administrator` role, and the `fabric-gh-runner` managed identity. Policy denies
 non-US regions, non-compliant capacity names, and any admin list other than the
 `Fabric-Capacity-Admins` group. See **[infrastructure.md](infrastructure.md)**.
+
+Azure Policy governs the capacity's ARM resource. Fabric policies (preview) govern
+actions inside Fabric: which item types can be created on a capacity, who can edit
+workspace CMK and outbound networking, and (portal-only for now) external data
+sharing. No Terraform provider supports policy sets yet, so they're deployed as
+JSON through the REST API. See
+[governance-compliance.md](governance-compliance.md#fabric-policies-preview).
 
 ## Pillar 2 — Compliance & CI/CD
 
@@ -73,7 +86,7 @@ Seven notebooks (`notebooks/`) build a tenant-wide governance/observability data
 | **Connections** | `connection_inventory_to_lakehouse` | `/v1/connections`, scanner, `List Item Connections` |
 | **Workspace access** | `workspace_access_to_lakehouse` | Power BI Admin `groups?$expand=users` |
 | **Governance marts** | `gold_governance_to_lakehouse` | `/admin/reports` + the connection map |
-| **Performance** | `heavy_interactive_workloads_to_lakehouse` | Fabric Capacity Metrics model (DAX) |
+| **Performance & report usage** | `heavy_interactive_workloads_to_lakehouse` | Capacity Metrics model (DAX) + `/admin/activityevents` |
 | **Serving** | `build_semantic_model`, `build_interactive_workload_model` | Direct Lake over the gold tables |
 
 The two dimension tables (`gateways`, `connections`) are **SCD Type 2**; bridge/usage

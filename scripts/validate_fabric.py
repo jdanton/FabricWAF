@@ -122,12 +122,66 @@ ITEM_PATTERNS: dict[str, re.Pattern] = {
     "Shortcut": re.compile(
         rf"^sc_{_TOKEN}_{_TOKEN}$"
     ),
+    # ps_tenant_{Purpose} | ps_cap_{BU}_{Env}_{Purpose}  (Fabric policies, preview)
+    "PolicySet": re.compile(
+        rf"^ps_(?:tenant_{_TOKEN}|cap_{_BU}_{_ENV}_{_TOKEN})$"
+    ),
+    # vl_{BU}_{Domain}
+    "VariableLibrary": re.compile(
+        rf"^vl_{_BU}_{_TOKEN}$"
+    ),
+    # cj_{BU}_{Source}_to_{Layer}_{Freq}
+    "CopyJob": re.compile(
+        rf"^cj_{_BU}_{_TOKEN}_to_{_LAYER}_{_FREQ}$"
+    ),
+    # sqldb_{BU}_{Function}_{Env}
+    "SQLDatabase": re.compile(
+        rf"^sqldb_{_BU}_{_TOKEN}_{_ENV}$"
+    ),
+    # mir_{BU}_{Source}_{Env}
+    "MirroredDatabase": re.compile(
+        rf"^mir_{_BU}_{_TOKEN}_{_ENV}$"
+    ),
+    # eh_{BU}_{Domain}_{Env}
+    "Eventhouse": re.compile(
+        rf"^eh_{_BU}_{_TOKEN}_{_ENV}$"
+    ),
+    # rtd_{BU}_{Domain}_{Audience}  (Real-Time Dashboard)
+    "KQLDashboard": re.compile(
+        rf"^rtd_{_BU}_{_TOKEN}_{_TOKEN}$"
+    ),
+    # udf_{BU}_{Domain}_{Purpose}
+    "UserDataFunction": re.compile(
+        rf"^udf_{_BU}_{_TOKEN}_{_TOKEN}$"
+    ),
+    # da_{BU}_{Domain}_{Purpose}
+    "DataAgent": re.compile(
+        rf"^da_{_BU}_{_TOKEN}_{_TOKEN}$"
+    ),
+    # af_{BU}_{Function}_{Domain}
+    "ApacheAirflowJob": re.compile(
+        rf"^af_{_BU}_{_TOKEN}_{_TOKEN}$"
+    ),
+    # dbt_{BU}_{Domain}_{Layer}
+    "DataBuildToolJob": re.compile(
+        rf"^dbt_{_BU}_{_TOKEN}_{_LAYER}$"
+    ),
+    # gql_{BU}_{Domain}_{Env}
+    "GraphQLApi": re.compile(
+        rf"^gql_{_BU}_{_TOKEN}_{_ENV}$"
+    ),
 }
 
 # Workspace name pattern: {BU}-{Function}-{Env}  e.g. fin-dw-prod
 WORKSPACE_PATTERN = re.compile(
     rf"^{_BU.replace('(', '(?:')}-[a-z][a-z0-9-]*-{_ENV.replace('(', '(?:')}$"
 )
+
+# Region short codes belong in capacity names only (naming-standard.md). Any
+# workspace or item name carrying one as a token is flagged, even when the
+# item type has no pattern of its own. Keep in sync with terraform/policy.tf.
+_REGION_CODES = r"(?:eus|eus2|wus|wus2|wus3|cus|ncus|scus|wcus)"
+REGION_TOKEN_PATTERN = re.compile(rf"(?:^|[-_]){_REGION_CODES}(?:[-_]|$)")
 
 # Roles that should not be held by individual User accounts in prod
 WRITE_ROLES = {"Admin", "Member", "Contributor"}
@@ -193,6 +247,16 @@ def check_workspace_name(ws: dict) -> list[dict]:
                 "{{BU}}-{{Function}}-{{Env}} (e.g. fin-dw-prod)"
             ),
         }]
+    if REGION_TOKEN_PATTERN.search(name):
+        return [{
+            "workspace": name,
+            "item": None,
+            "type": "naming",
+            "message": (
+                f"Workspace name '{name}' contains a region code. Region belongs "
+                "in the capacity name only."
+            ),
+        }]
     return []
 
 
@@ -203,11 +267,9 @@ def check_item_names(ws_name: str, items: list[dict]) -> list[dict]:
         item_type = item.get("type", "Unknown")
         pattern = ITEM_PATTERNS.get(item_type)
 
-        if pattern is None:
-            # Unknown type — skip rather than fail; new Fabric types may not be listed yet
-            continue
-
-        if not pattern.match(item_name):
+        # Unknown types have no pattern (new Fabric types may not be listed yet),
+        # but still get the region-code check.
+        if pattern is not None and not pattern.match(item_name):
             violations.append({
                 "workspace": ws_name,
                 "item": item_name,
@@ -215,6 +277,16 @@ def check_item_names(ws_name: str, items: list[dict]) -> list[dict]:
                 "message": (
                     f"'{item_name}' ({item_type}) does not match the required "
                     f"naming pattern. See naming-standard.md for details."
+                ),
+            })
+        elif REGION_TOKEN_PATTERN.search(item_name):
+            violations.append({
+                "workspace": ws_name,
+                "item": item_name,
+                "type": "naming",
+                "message": (
+                    f"'{item_name}' ({item_type}) contains a region code. Region "
+                    "belongs in the capacity name only."
                 ),
             })
     return violations

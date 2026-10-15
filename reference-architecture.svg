@@ -197,7 +197,7 @@
 
   <rect x="665" y="424" width="126" height="36" rx="5" fill="#fff" stroke="#d4bffc" stroke-width="0.7"/>
   <text x="675" y="440" fill="#4c1d95" font-size="9" font-weight="600">Naming Standard</text>
-  <text x="675" y="452" fill="#64748b" font-size="7.5">{BU}-{Fn}-{Env}-{Region}</text>
+  <text x="675" y="452" fill="#64748b" font-size="7">{BU}-{Fn}-{Env} · cap +{Region}</text>
 
   <rect x="799" y="424" width="108" height="36" rx="5" fill="#fff" stroke="#d4bffc" stroke-width="0.7"/>
   <text x="809" y="440" fill="#4c1d95" font-size="9" font-weight="600">Tagging</text>
@@ -214,7 +214,7 @@
   <!-- Gaps warning -->
   <rect x="665" y="473" width="523" height="26" rx="5" fill="#fffbeb" stroke="#f59e0b" stroke-width="0.7"/>
   <text x="683" y="490" fill="#b45309" font-size="9" font-weight="600">⚠  Gaps today:</text>
-  <text x="780" y="490" fill="#78716c" font-size="8.5">No Azure Policy · Coarse RBAC (Admin / Member / Contributor / Viewer) · Limited audit events</text>
+  <text x="780" y="490" fill="#78716c" font-size="8.5">Fabric policies still preview (no naming rules) · Coarse RBAC (Admin / Member / Contributor / Viewer)</text>
 
   <!-- ===== ONELAKE BAR ===== -->
   <rect x="78" y="530" width="1126" height="50" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.2"/>

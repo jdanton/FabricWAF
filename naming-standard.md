@@ -2,9 +2,10 @@
 
 ## Guiding Principles
 
-1. **Establish a standard early** — use the pattern `{BU}-{Function}-{Env}-{Region}` consistently
-2. **Apply consistently** across capacities, workspaces, lakehouses, warehouses, and pipelines
-3. **Discipline and automation are your only tools** — Fabric has no policy engine to enforce naming
+1. **Establish a standard early** — `{BU}`, `{Function}`, and `{Env}` are the core tokens on every resource
+2. **Region belongs to the capacity only** — the capacity is the only Fabric resource pinned to an Azure region. Workspaces inherit the region of the capacity they're assigned to, and items inherit it from the workspace. Reassigning a workspace to a capacity in another region would make a region-coded workspace or item name wrong. So `{Region}` appears **only** in capacity names.
+3. **Apply consistently** across capacities, workspaces, lakehouses, warehouses, and pipelines
+4. **Names are enforced by automation, not by Fabric** — Azure Policy enforces capacity names at the ARM layer. [Fabric policies](https://learn.microsoft.com/en-us/fabric/governance/fabric-policies-overview) (preview) can govern *who* creates *which item types* where, but they have no name condition. Workspace and item names are still enforced by the audit/validate scripts and the CI/CD gate.
 
 ---
 
@@ -15,7 +16,7 @@
 | `{BU}` | Business unit or department | `fin`, `mktg`, `hr`, `eng`, `sales`, `ops` |
 | `{Function}` | Workload purpose or domain | `dw`, `analytics`, `ingest`, `ml`, `report` |
 | `{Env}` | Environment tier | `dev`, `tst`, `stg`, `prod` |
-| `{Region}` | Azure region short code | `eus`, `wus`, `neu`, `weu`, `sea` |
+| `{Region}` | Azure region short code — **capacity names only** | `eus`, `eus2`, `wus2`, `wus3`, `cus`, `scus` (US allow-list, see `terraform/policy.tf`) |
 | `{Layer}` | Medallion layer | `raw`, `bronze`, `silver`, `gold` |
 | `{Source}` | Source system identifier | `sap`, `sf` (Salesforce), `erp`, `crm`, `ga` |
 | `{Domain}` | Business data domain | `customers`, `orders`, `products`, `employees` |
@@ -40,8 +41,10 @@
 | Example | Description |
 |---------|-------------|
 | `fin-dw-prod-eus` | Finance data warehouse, production, East US |
-| `mktg-analytics-dev-weu` | Marketing analytics, development, West Europe |
-| `eng-ml-stg-wus` | Engineering ML workload, staging, West US |
+| `mktg-analytics-dev-eus2` | Marketing analytics, development, East US 2 |
+| `eng-ml-stg-wus2` | Engineering ML workload, staging, West US 2 |
+
+This is the **only** pattern that carries `{Region}`. Capacity names are enforced at the ARM layer by Azure Policy (`fabric-capacity-naming-standard` in `terraform/policy.tf`) and by the `capacity_name` variable validation.
 
 ---
 
@@ -65,7 +68,7 @@ Domains are the top-level logical boundary for organizing workspaces by business
 
 **Pattern:** `{BU}-{Function}-{Env}`
 
-Workspaces are assigned to a domain and backed by a capacity. Region is omitted because capacity already carries it.
+Workspaces are assigned to a domain and backed by a capacity. **No region code:** the capacity already carries the region, and a workspace can be reassigned to another capacity without being renamed.
 
 | Example | Description |
 |---------|-------------|
@@ -306,10 +309,137 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 | `env_fin_spark_prod` | Finance Spark runtime config, production |
 | `env_eng_ml_dev` | Engineering ML environment, development |
 
----------|-------------|
-| `finance` | Finance domain |
-| `sales` | Sales domain |
-| `engineering-platform` | Engineering platform sub-domain |
+---
+
+### 23. Policy Set (Fabric policies, preview)
+
+**Pattern:** `ps_tenant_{Purpose}` (tenant scope) or `ps_cap_{BU}_{Env}_{Purpose}` (capacity scope)
+
+A policy set's scope is fixed when it is created, so the scope goes in the name. Spaces aren't allowed. Capacity-scoped sets are named for the BU and environment they govern, **not** for the capacity: the same set can be activated on a replacement capacity in another region without a rename. Store every policy set in the governance workspace (`ops-governance-prod`).
+
+| Example | Description |
+|---------|-------------|
+| `ps_tenant_baseline` | Tenant-wide workspace-settings and external-sharing rules |
+| `ps_cap_fin_prod_itemcreation` | Item-creation allow list for finance production capacities |
+| `ps_cap_eng_dev_itemcreation` | Item-creation rules for engineering dev capacities |
+
+---
+
+### 24. Variable Library
+
+**Pattern:** `vl_{BU}_{Domain}`
+
+A variable library holds per-stage values (connection IDs, lakehouse IDs, thresholds), so the name omits `{Env}`. The active value set selects the environment.
+
+| Example | Description |
+|---------|-------------|
+| `vl_fin_gl` | Finance GL pipeline variables |
+| `vl_eng_platform` | Engineering platform shared variables |
+
+---
+
+### 25. Copy Job
+
+**Pattern:** `cj_{BU}_{Source}_to_{Layer}_{Freq}`
+
+| Example | Description |
+|---------|-------------|
+| `cj_fin_sap_to_bronze_hourly` | Finance: incremental SAP copy to bronze, hourly |
+| `cj_sales_crm_to_raw_daily` | Sales: CRM copy to raw, daily |
+
+---
+
+### 26. SQL Database
+
+**Pattern:** `sqldb_{BU}_{Function}_{Env}`
+
+| Example | Description |
+|---------|-------------|
+| `sqldb_fin_app_prod` | Finance operational app database, production |
+| `sqldb_ops_metadata_dev` | Ops metadata store, development |
+
+---
+
+### 27. Mirrored Database
+
+**Pattern:** `mir_{BU}_{Source}_{Env}`
+
+| Example | Description |
+|---------|-------------|
+| `mir_fin_azuresql_prod` | Finance Azure SQL mirror, production |
+| `mir_sales_snowflake_prod` | Sales Snowflake mirror, production |
+
+---
+
+### 28. Eventhouse
+
+**Pattern:** `eh_{BU}_{Domain}_{Env}`
+
+Creating an eventhouse also creates a default KQL database **with the same name**. Rename that database to the `kql_` pattern (section 13), or the audit will flag it.
+
+| Example | Description |
+|---------|-------------|
+| `eh_eng_telemetry_prod` | Engineering telemetry eventhouse, production |
+
+---
+
+### 29. Real-Time Dashboard
+
+**Pattern:** `rtd_{BU}_{Domain}_{Audience}` (API item type `KQLDashboard`)
+
+| Example | Description |
+|---------|-------------|
+| `rtd_ops_latency_noc` | Ops latency dashboard for the NOC |
+
+---
+
+### 30. User Data Function
+
+**Pattern:** `udf_{BU}_{Domain}_{Purpose}`
+
+| Example | Description |
+|---------|-------------|
+| `udf_fin_gl_validate_journal` | Finance: journal-entry validation function |
+
+---
+
+### 31. Data Agent
+
+**Pattern:** `da_{BU}_{Domain}_{Purpose}`
+
+| Example | Description |
+|---------|-------------|
+| `da_sales_pipeline_qna` | Sales pipeline Q&A agent |
+
+---
+
+### 32. Apache Airflow Job
+
+**Pattern:** `af_{BU}_{Function}_{Domain}`
+
+| Example | Description |
+|---------|-------------|
+| `af_eng_orchestrate_telemetry` | Engineering telemetry orchestration DAGs |
+
+---
+
+### 33. dbt Job
+
+**Pattern:** `dbt_{BU}_{Domain}_{Layer}` (API item type `DataBuildToolJob`)
+
+| Example | Description |
+|---------|-------------|
+| `dbt_fin_gl_silver` | Finance GL models building the silver layer |
+
+---
+
+### 34. GraphQL API
+
+**Pattern:** `gql_{BU}_{Domain}_{Env}`
+
+| Example | Description |
+|---------|-------------|
+| `gql_sales_orders_prod` | Sales orders GraphQL API, production |
 
 ---
 
@@ -338,12 +468,26 @@ Tables live inside a lakehouse, so the BU and env context is inherited.
 | Shortcut | `sc_` | `sc_{Source}_{Domain}` | `sc_lh_fin_raw_customers` |
 | Reflex | `rx_` | `rx_{BU}_{Domain}_{Trigger}` | `rx_sales_pipeline_deal_alert` |
 | Environment | `env_` | `env_{BU}_{Purpose}_{Env}` | `env_fin_spark_prod` |
+| Policy Set | `ps_` | `ps_tenant_{Purpose}` / `ps_cap_{BU}_{Env}_{Purpose}` | `ps_cap_fin_prod_itemcreation` |
+| Variable Library | `vl_` | `vl_{BU}_{Domain}` | `vl_fin_gl` |
+| Copy Job | `cj_` | `cj_{BU}_{Source}_to_{Layer}_{Freq}` | `cj_fin_sap_to_bronze_hourly` |
+| SQL Database | `sqldb_` | `sqldb_{BU}_{Function}_{Env}` | `sqldb_fin_app_prod` |
+| Mirrored Database | `mir_` | `mir_{BU}_{Source}_{Env}` | `mir_fin_azuresql_prod` |
+| Eventhouse | `eh_` | `eh_{BU}_{Domain}_{Env}` | `eh_eng_telemetry_prod` |
+| Real-Time Dashboard | `rtd_` | `rtd_{BU}_{Domain}_{Audience}` | `rtd_ops_latency_noc` |
+| User Data Function | `udf_` | `udf_{BU}_{Domain}_{Purpose}` | `udf_fin_gl_validate_journal` |
+| Data Agent | `da_` | `da_{BU}_{Domain}_{Purpose}` | `da_sales_pipeline_qna` |
+| Airflow Job | `af_` | `af_{BU}_{Function}_{Domain}` | `af_eng_orchestrate_telemetry` |
+| dbt Job | `dbt_` | `dbt_{BU}_{Domain}_{Layer}` | `dbt_fin_gl_silver` |
+| GraphQL API | `gql_` | `gql_{BU}_{Domain}_{Env}` | `gql_sales_orders_prod` |
+
+> No pattern in this matrix contains `{Region}` except Capacity.
 
 ---
 
 ## Enforcement Recommendations
 
-Since Fabric lacks a built-in policy engine, consider these guardrails:
+Fabric policies (preview) can't evaluate names: their conditions are workspace, security group, sensitivity label, item type, recipient domain, and workspace setting. Enforce naming with these guardrails:
 
 - **Governance wiki** — publish this standard and link it from every workspace description
 - **Workspace admin gating** — limit workspace creation to a small group who validate names before provisioning

@@ -73,7 +73,7 @@ profile takes no position on that setting (it is left as-is and reported as
 | 🔺 HIGH | Guest users can browse and access content | `ElevatedGuestsTenant` | — | Off | Off | Goes beyond opening a shared link — lets guests *browse* tenant content. Should rarely be on org-wide. |
 | 🔺 HIGH | Download reports (.pbix) | `ExportReport` | — | Scope | Off | A downloaded `.pbix` can carry the full data model **and** embedded credentials/connection strings off-platform. Primary exfiltration path. |
 | 🔺 HIGH | Email subscriptions to external users | `EmailSubscriptionsToExternalUsers` | — | Off | Off | Schedules report snapshots to arbitrary external email addresses on a recurring basis — automated, ongoing data egress. |
-| 🔺 HIGH | External data sharing | `AllowExternalDataSharingSwitch` | — | Scope | Off | Lets users share live OneLake data outward to other tenants. Powerful and easy to misuse without governance. |
+| 🔺 HIGH | External data sharing | `AllowExternalDataSharingSwitch` | — | Scope | Off | Lets users share live OneLake data outward to other tenants. Powerful and easy to misuse without governance. **Oct 2026:** when this is on, pair it with an active tenant **Allow external data sharing** Fabric policy (preview) that limits sharing to approved recipient domains, sensitivity labels, and workspaces. The tenant setting still decides whether sharing is possible at all. |
 | 🔶 MED | Accept external data shares | `AllowExternalDataSharingReceiverSwitch` | — | — | Off | Inbound counterpart — accepting external shares can pull ungoverned external data into the tenant. |
 | 🔶 MED | Guests work with shared models in their own tenant | `ExternalDatasetSharingTenant` | — | — | Off | Data leaves the boundary of your tenant's monitoring once a guest consumes the model elsewhere. |
 | 🔶 MED | Email subscriptions to B2B guests | `EmailSubscriptionsToB2BUsers` | — | — | Off | Recurring snapshots delivered to guest identities. |
@@ -213,7 +213,40 @@ the next assessment run, and overwritten if the assessment is run with `--apply`
 
 ---
 
-## Recent ecosystem changes (verified June 2026)
+## Recent ecosystem changes (verified October 2026)
+
+Changes since the June 2026 check:
+
+- **Tenant settings moved in the UI.** They're now under **OneLake catalog → Govern →
+  Configurations → Tenant settings** (Govern GA September 2026, rolling out by region);
+  the Admin portal still works. The List/Update tenant-settings APIs are unchanged.
+- **Fabric policies (preview) sit on top of tenant settings.** A tenant setting that
+  disables a feature always wins; a policy can only narrow who may use what the setting
+  allows. The new **Policies (preview)** tenant setting gates who can create and
+  activate policy sets. See [docs/governance-compliance.md](docs/governance-compliance.md#fabric-policies-preview).
+- **New settings since April 2026 (resolve `settingName` at runtime):** the table below
+  adds the ones with security or governance impact. Others added since April are
+  productivity or preview features (ADBC connections, Fabric Copilot (preview),
+  Operations Agent observability/insights, Azure Databricks Storage items,
+  mirrored-catalog items, Event Schema Sets, Denodo/Starburst SSO, VNet-gateway
+  Entra SSO, embedded app visuals in Real-Time Dashboards).
+- **Gate settings removed** because the features went GA: Graph, Maps, Plan, Data agent,
+  Operations Agents, org apps, "Allow connections to featured tables". If a baseline
+  diff (`compare_tenant_settings.py`) shows them as missing, that's expected.
+
+| Area | Setting (UI title) | Internal name | Notes |
+|------|--------------------|---------------|-------|
+| Governance | Policies (preview) | *unpublished* | Enable, **scoped to the platform admin group and the automation identity**. Required before any policy set can be created or activated. |
+| Resilience | Fabric item recovery | *unpublished* | **On by default** (retention 3–90 days). Keep it on with ≥ 7 days. Deleted items can be recovered through the recoverable-items APIs. |
+| Networking | Configure workspace-level IP firewall rules and trusted resource instances | *renamed* | Formerly "Configure workspace IP firewall rules (preview)". Workspace IP firewall went GA in March 2026. |
+| Data residency | Allow data processing outside geographic region for Azure AI services | `AllowUserDataProcessedByAiServicesOutOfGeo` (tenant) | Now also **delegable to capacity**. Keep it off at tenant level and allow per capacity only where residency permits. |
+| AI egress | Fabric data agents can send operational metadata to Microsoft Foundry | *unpublished* | New data-flow path to Foundry. Scope it or turn it off under the Paranoid profile. |
+| Sharing | Enable anonymous data access for Fabric Apps (Preview) | *unpublished* | **Anonymous** access path, the same risk class as Publish to web. Keep it off. |
+| Apps | Enable Fabric App Items (preview) | *unpublished* | New item type and hosting surface. Scope it to a pilot group. |
+| Discovery | Users can find objects in search (table/column discovery) | *unpublished* | Exposes table/column metadata in search. Review for regulated domains (new opt-out). |
+| Ops | Receive in-product notifications for service outages or incidents | *unpublished* | Low risk; on. |
+
+### Earlier changes (verified June 2026)
 
 This catalog was checked against the Fabric ecosystem in June 2026. Summary:
 

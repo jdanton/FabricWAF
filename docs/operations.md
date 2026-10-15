@@ -31,7 +31,9 @@ az login --tenant "<tenant-id>" --scope "https://api.fabric.microsoft.com/.defau
   lakehouse (schema-enabled), and `semantic-link-labs` (installed in-notebook via
   `%pip`). For the performance pipeline, the **Microsoft Fabric Capacity Metrics** app
   with **write/owner** on its model, and the *Semantic Model Execute Queries REST API*
-  tenant setting ON.
+  tenant setting ON. Report-usage tables additionally need the activity log to be readable
+  by the run identity (Fabric/Power BI **admin**) — and note it only retains **30 days**,
+  so this notebook has to run at least monthly or history is lost for good.
 
 ## Run order — management lakehouse
 
@@ -49,6 +51,16 @@ The notebooks have dependencies; run them in this order:
 A. heavy_interactive_workloads_to_lakehouse   (independent)   ┐ performance track
 B. build_interactive_workload_model           (needs #A)      ┘
 ```
+
+`heavy_interactive_workloads_to_lakehouse` is **incremental for report usage**: it skips
+activity-log days it already stored, re-pulling only **today**. Days come **newest first**.
+
+Schedule it **daily**. The API is capped at ~200 requests/hour and a busy tenant costs
+~30 requests per day of log, so the first run covers only a handful of days — that is
+expected, not a failure. It prints each skipped day with the reason and the per-day call
+cost, and re-running continues where it stopped; a daily schedule reaches full window
+depth on its own within a week. A day the API refuses (HTTP 400, normally "older than
+retention") is skipped, not fatal.
 
 The gold and model notebooks fail fast if their input table is missing (e.g. gold
 raises `RuntimeError` if `connection_semantic_model_map` doesn't exist yet). If a

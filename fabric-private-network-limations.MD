@@ -125,6 +125,30 @@ The proposed architecture: mirror two databases from an on-premises SQL Server 2
 
 ---
 
+## Changes since April 2026 (verified October 2026)
+
+**Fabric policies (preview) and networking**
+- The **Allow workspace settings editing** tenant policy can limit who may edit a workspace's `OutboundNetworking` and `Encryption` (CMK) settings to named security groups. Workspace admins outside those groups can no longer turn outbound protection off. The policy controls *who may edit* the setting, not its value, and the tenant setting **Configure workspace-level outbound network rules** still takes precedence. See [docs/governance-compliance.md](docs/governance-compliance.md#fabric-policies-preview).
+- The Policies center lives in the OneLake catalog **Govern** tab, which is unavailable when tenant-level Private Link is enabled (Part B). In a Private Link tenant, manage policy sets through the REST API (`scripts/apply_fabric_policies.py` from the runner).
+- Fabric policies aren't supported on capacities in **West US**, West Europe, or North Europe.
+
+**Outbound access protection (OAP)**
+- **OneLake OAP — GA (Sep 2026):** blocks external shortcuts and copy by default in protected workspaces.
+- **Eventhouse OAP — GA (Sep 2026).** OAP for other Real-Time Intelligence items, Maps, and Operations Agent is in preview.
+- **FQDN allow list for Spark outbound — preview.** It's finer-grained than managed private endpoints for public package and API endpoints, and it partly addresses the `pip install` limitation in Part C.
+
+**Workspace-level private links and inbound rules**
+- The "OneLake security not supported" limitation has been **removed**. Default semantic models no longer block enabling a workspace private link.
+- Newly supported item types: Activator, Data agent, SQL database (preview), Eventhouse (GA, Sep 2026), Eventstream (preview).
+- Still unsupported: **Power BI semantic models**, **deployment pipelines** (you can't restrict inbound access on a workspace that is in a pipeline), item sharing links, the Govern tab, and workspace monitoring.
+- **Workspace IP firewall — GA (Mar 2026).** The tenant setting is now titled *Configure workspace-level IP firewall rules and trusted resource instances*. New workspace APIs: `communicationPolicy/inbound/firewall`, `/inbound/azureResources` (resource-instance rules; OneLake resource-instance rules GA Jul 2026), and `/inbound/externalDataShares`.
+- **List Networking Communication Policies admin API — GA (Sep 2026)** (`GET /v1/admin/workspaces/networking/communicationpolicies`, `Tenant.Read.All`, service principal / managed identity supported). It's the supported way to audit inbound and outbound rules across all workspaces.
+
+**Workspace CMK**
+- **Workspace CMK APIs — GA (Aug 2026)** (`GET /workspaces/{id}/encryption`, `POST .../encryption/assign`, `.../reset`). Combine them with the workspace-settings-editing policy so only the platform group can change keys.
+
+---
+
 ## Related but Distinct: Entra Tenant Restrictions v2
 
 Included for completeness in case this broader identity-layer control, rather than Fabric-specific network security, was the intended scope. This is genuinely tenant-level and not Fabric-specific.

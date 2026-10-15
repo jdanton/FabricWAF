@@ -64,12 +64,12 @@
 
 | Pillar | Detail |
 |--------|--------|
-| **Naming Standard** | `{BU}-{Fn}-{Env}-{Region}` |
+| **Naming Standard** | Capacity `{BU}-{Fn}-{Env}-{Region}` · everything else `{BU}-{Fn}-{Env}` (no region) |
 | **Tagging** | Owner · Cost Center · Env · Data Classification |
 | **API Automation** | Enforce via CI/CD & scripts |
 | **Audit → Sentinel** | Activity logs to Log Analytics |
 
-> ⚠ **Gaps today:** No Azure Policy · Coarse RBAC (Admin / Member / Contributor / Viewer) · Limited audit events
+> ⚠ **Gaps today:** Fabric policies still in preview (3 policy types, no naming or role rules) · Coarse RBAC (Admin / Member / Contributor / Viewer)
 
 ---
 

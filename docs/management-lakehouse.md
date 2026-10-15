@@ -10,7 +10,7 @@ semantic models. They run inside Fabric under a **Fabric administrator** identit
 | 2 | `connection_inventory_to_lakehouse.ipynb` | connection inventory tables | `/v1/connections` + scanner + item connections |
 | 3 | `workspace_access_to_lakehouse.ipynb` | `workspace_access`, `workspace_user_access`, `workspace_user_access_summary` | Power BI Admin `groups?$expand=users` |
 | 4 | `gold_governance_to_lakehouse.ipynb` | `gold_file_dependencies`, `gold_report_risk` | `/admin/reports` + connection map |
-| 5 | `heavy_interactive_workloads_to_lakehouse.ipynb` | `gold_heavy_interactive_items` | Fabric Capacity Metrics model (DAX) |
+| 5 | `heavy_interactive_workloads_to_lakehouse.ipynb` | `gold_heavy_interactive_items`, `report_activity_events`, `report_usage_daily`, `gold_report_usage`, `gold_report_user_usage` | Capacity Metrics model (DAX) + `/admin/activityevents` |
 | 6 | `build_semantic_model.ipynb` | `Fabric_Governance` Direct Lake model + measures | gold tables |
 | 7 | `build_interactive_workload_model.ipynb` | `Interactive_Workloads` Direct Lake model + measures | heavy-workload mart |
 | 8 | `build_workspace_access_model.ipynb` | `Workspace_Access` Direct Lake model + measures | workspace-access tables |
@@ -166,11 +166,14 @@ collapsing the `Unknown`/`Other` buckets. Extra buckets added here: `SharePoint`
 
 ---
 
-## 5 — Heavy interactive workloads (performance)
+## 5 — Performance & report usage
 
 `heavy_interactive_workloads_to_lakehouse.ipynb` (Fabric folder **`Performance`**) —
 ranks reports & semantic models by **interactive** CU so you can prioritise what to move
-into a warehouse.
+into a warehouse, **and** pulls the activity log to answer *who opens which report, and
+how often*.
+
+### 5a — Heavy interactive workloads (CU)
 
 - Queries the **Fabric Capacity Metrics** app's semantic model with Power BI
   `executeQueries` (DAX) against `Metrics By Item And Operation`.
@@ -187,6 +190,80 @@ into a warehouse.
 
 **Table:** `gold_heavy_interactive_items` (one row per item: interactive/background/total
 CU, `interactive_ops`, `top_operation`, `artifact_kind`, workspace, capacity).
+
+### 5b — Report usage: who opens what, how often
+
+CU tells you what a report *costs*; it says nothing about whether anyone wants it. The
+second half of the notebook pulls the **Power BI activity log** — the only tenant-wide
+source of *who viewed what, when*:
+
+```
+GET /v1.0/myorg/admin/activityevents
+      ?startDateTime='2026-08-05T00:00:00'&endDateTime='2026-08-05T23:59:59'
+```
+
+Constraints that shape the code:
+
+- **One UTC day per request**, ISO 8601 and **single-quoted** — both bounds must land on
+  the same day.
+- **Paged by continuation token** — follow `continuationUri` until `continuationToken`
+  is null. A busy day is many calls.
+- **Throttled at ~200 requests/hour**, and a busy tenant costs **~30 continuation pages per
+  day of log** — so 28 days is ~840 calls and *cannot* be done in one run. The loop honours
+  `Retry-After` on 429, stops at `MAX_ACTIVITY_CALLS` (default 180), and prints the per-day
+  call cost so the real number is visible rather than guessed. A day cut short
+  mid-pagination is **not written** — a partial day that looks complete is worse than one
+  that says it's missing.
+- **Days are pulled newest-first**, and only *today* is ever re-pulled. This matters more
+  than it sounds: oldest-first spends the whole budget on two-week-old data and returns
+  nothing recent, and re-pulling the newest *stored* day (rather than today) throws away a
+  full day's worth of calls on every run. Older days backfill over subsequent runs.
+- `ACTIVITY_FILTER = True` switches to one server-side `$filter=Activity eq '…'` pass per
+  activity type instead of one unfiltered sweep. It drops the ~80% of the log that gets
+  discarded client-side, but costs a floor of `len(TRACKED_ACTIVITIES)` calls per day —
+  cheaper on some tenants, not all. The printed per-day counts are how you decide.
+- **~30-day retention, and the edge is soft.** The boundary is enforced against *now*, so
+  the oldest day in a naive 30-day window is often already gone and returns **HTTP 400**.
+  `USAGE_WINDOW_DAYS` therefore defaults to **28**, and a 400 skips that one day (printing
+  the response body, which is where the API states the reason) instead of aborting the run
+  — one unavailable day must not cost you the 27 that are available.
+- Days already stored aren't re-fetched, so a scheduled run accumulates history *past*
+  what the API can still serve. The newest stored day *is* re-fetched, because it was
+  probably partial when written. Miss 30+ days and the gap is permanent.
+
+**Item identity across activity types.** The event schema names the item differently per
+activity (`ViewReport` → `ReportId`, `ViewDashboard` → `DashboardId`, newer events →
+`ArtifactId`), so `_item()` coalesces them into `item_id`/`item_name`/`item_kind`.
+`ReportType` containing "paginated" is what splits `Report` from `PaginatedReport` — the
+same vocabulary `gold_heavy_interactive_items.artifact_kind` uses, which is what lets the
+CU join work at all.
+
+**Frequency of execution.** Raw view counts can't tell *"opened 40 times last Tuesday and
+never again"* from *"opened twice every morning"*, so cadence is derived from the **gaps
+between the days a report was actually opened**: `median_gap_days` ≤ 1.5 → `Daily`, ≤ 9 →
+`Weekly`, ≤ 31 → `Monthly`, else `Sporadic` (`One-off` for a single active day, `Unused`
+for none). `is_bursty` flags `max_gap ≥ 3 × median_gap` — a spike wearing a cadence
+costume.
+
+**Tables:**
+
+| Table | Grain | Notes |
+|---|---|---|
+| `report_activity_events` | one activity event | partitioned by `activity_date`, written with `replaceWhere` on just the days pulled; keeps dashboards too |
+| `report_usage_daily` | report × day | built over **all** retained history (not just the window) so it stays the long-run trend table |
+| `gold_report_usage` | report | views, distinct users, cadence, **`cu_s_per_view`** |
+| `gold_report_user_usage` | report × user | per-user view counts, cadence, and `pct_of_report_views` |
+
+**The payoff is the join.** `gold_report_usage` **full-outer** joins usage to
+`gold_heavy_interactive_items` on report id, which surfaces the two lists worth acting on:
+`cu_s_per_view` descending (expensive per view → migration candidates) and
+`is_unused_with_cu` (burning CU with **zero** views → retirement candidates). Because the
+CU window (14d) is shorter than the usage window (30d), `cu_s_per_view` divides by
+`views_cu_window` — views restricted to the CU window — not by the headline `view_count`.
+
+> **Identity is stored as-is.** `user_id` is the UPN/email. That's deliberate (it matches
+> how `workspace_access` stores users and is what makes per-user drilldown possible), but
+> it does make these tables personal data — treat access to them accordingly.
 
 ---
 
@@ -283,3 +360,4 @@ notebooks in a `Performance` folder.
 | Report → dataset lineage | `GET /admin/reports` | Tenant-wide |
 | All workspace role assignments | `GET /v1.0/myorg/admin/groups?$expand=users` | Tenant-wide; returns each workspace's users + roles inline (paged by `$skip`) — no per-workspace call, no Graph lookups |
 | Capacity CU by item/op | Capacity Metrics model via `executeQueries` | Facts DirectQuery-gated — bind params with `Default.UpdateParameters` first |
+| Who viewed which report | `GET /admin/activityevents` | One UTC day per call, single-quoted ISO 8601; continuation-token paging; ~200 req/hr; ~30-day retention, and the oldest day 400s — ask for 28 |
